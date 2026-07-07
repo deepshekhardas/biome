@@ -18,3 +18,43 @@
 @utility tab-*{tab-size:--value(--tab-size-*);}
 
 @utility px-*{padding-inline:--value(--padding-inline-*);}
+
+@theme KeepTheme { --KeepVar: RED; --KeepVar-*: RED; --KeepOther: --value(--KeepRef-*); }
+
+@utility KeepUtility { COLOR: RED; background: --value(--KeepRef-*); }
+
+@utility Keep-* { COLOR: RED; }
+
+@variant KeepVariant { &:HOVER { COLOR: RED; } }
+
+@custom-variant KeepCustomVariant (&:WHERE(.KeepClass));
+
+@custom-variant KeepMediaVariant (@MEDIA SCReEN AND (MIN-WIDTH: 700PX));
+
+@custom-variant KeepContainerVariant (@CONTAINER KeepContainer (WIDTH <= 150PX));
+
+@custom-variant KeepSupportsVariant (@SUPPORTS (COLOR: RED));
+
+@custom-variant KeepScopeVariant (@SCOPE (A:HOVER) TO (.KeepEnd:FOCUS));
+
+@custom-variant KeepColorProfileVariant (@COLOR-PROFILE DEVICE-CMYK);
+
+@custom-variant KeepPropertyVariant (@PROPERTY --Keep-custom-Prop);
+
+@custom-variant KeepFontFaceVariant (@FONT-FACE);
+
+@custom-variant KeepFunctionVariant (@FUNCTION --KeepFunc(--KeepParam <COLOR>#: RED) RETURNS <IDENT>+);
+
+.x { @apply KeepUtility KeepOther; }
+
+@source inline("KeepSource");
+
+@source not "KeepSourcePath";
+
+@reference "KeepRef.css";
+
+@config "KeepConfig.js";
+
+@plugin "KeepPlugin" { COLOR: RED; }
+
+@slot;

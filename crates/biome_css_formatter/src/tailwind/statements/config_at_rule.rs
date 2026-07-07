@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{TwConfigAtRule, TwConfigAtRuleFields};
 use biome_formatter::write;
 
@@ -15,7 +16,7 @@ impl FormatNodeRule<TwConfigAtRule> for FormatTwConfigAtRule {
         write!(
             f,
             [
-                config_token.format(),
+                format_css_token(&config_token?).lowercase(),
                 space(),
                 path.format(),
                 semicolon_token.format()

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{TwPluginAtRule, TwPluginAtRuleFields};
 use biome_formatter::write;
 
@@ -13,7 +14,14 @@ impl FormatNodeRule<TwPluginAtRule> for FormatTwPluginAtRule {
             semicolon_token,
         } = node.as_fields();
 
-        write!(f, [plugin_token.format(), space(), name.format()])?;
+        write!(
+            f,
+            [
+                format_css_token(&plugin_token?).lowercase(),
+                space(),
+                name.format()
+            ]
+        )?;
         if let Some(block) = block {
             write!(f, [space(), block.format()])?;
             if let Some(semicolon_token) = semicolon_token {

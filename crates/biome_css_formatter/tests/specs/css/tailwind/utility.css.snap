@@ -27,6 +27,46 @@ info: css/tailwind/utility.css
 
 @utility px-*{padding-inline:--value(--padding-inline-*);}
 
+@theme KeepTheme { --KeepVar: RED; --KeepVar-*: RED; --KeepOther: --value(--KeepRef-*); }
+
+@utility KeepUtility { COLOR: RED; background: --value(--KeepRef-*); }
+
+@utility Keep-* { COLOR: RED; }
+
+@variant KeepVariant { &:HOVER { COLOR: RED; } }
+
+@custom-variant KeepCustomVariant (&:WHERE(.KeepClass));
+
+@custom-variant KeepMediaVariant (@MEDIA SCReEN AND (MIN-WIDTH: 700PX));
+
+@custom-variant KeepContainerVariant (@CONTAINER KeepContainer (WIDTH <= 150PX));
+
+@custom-variant KeepSupportsVariant (@SUPPORTS (COLOR: RED));
+
+@custom-variant KeepScopeVariant (@SCOPE (A:HOVER) TO (.KeepEnd:FOCUS));
+
+@custom-variant KeepColorProfileVariant (@COLOR-PROFILE DEVICE-CMYK);
+
+@custom-variant KeepPropertyVariant (@PROPERTY --Keep-custom-Prop);
+
+@custom-variant KeepFontFaceVariant (@FONT-FACE);
+
+@custom-variant KeepFunctionVariant (@FUNCTION --KeepFunc(--KeepParam <COLOR>#: RED) RETURNS <IDENT>+);
+
+.x { @apply KeepUtility KeepOther; }
+
+@source inline("KeepSource");
+
+@source not "KeepSourcePath";
+
+@reference "KeepRef.css";
+
+@config "KeepConfig.js";
+
+@plugin "KeepPlugin" { COLOR: RED; }
+
+@slot;
+
 ```
 
 
@@ -74,5 +114,66 @@ info: css/tailwind/utility.css
 @utility px-* {
 	padding-inline: --value(--padding-inline-*);
 }
+
+@theme KeepTheme {
+	--KeepVar: RED;
+	--KeepVar-*: RED;
+	--KeepOther: --value(--KeepRef-*);
+}
+
+@utility KeepUtility {
+	color: RED;
+	background: --value(--KeepRef-*);
+}
+
+@utility Keep-* {
+	color: RED;
+}
+
+@variant KeepVariant {
+	&:hover {
+		color: RED;
+	}
+}
+
+@custom-variant KeepCustomVariant (&:where(.KeepClass));
+
+@custom-variant KeepMediaVariant (@media SCReEN AND (min-width: 700px));
+
+@custom-variant KeepContainerVariant (
+	@container KeepContainer (width <= 150px)
+);
+
+@custom-variant KeepSupportsVariant (@supports (COLOR: RED));
+
+@custom-variant KeepScopeVariant (@scope (A:hover) to (.KeepEnd:focus));
+
+@custom-variant KeepColorProfileVariant (@color-profile DEVICE-CMYK);
+
+@custom-variant KeepPropertyVariant (@property --Keep-custom-Prop);
+
+@custom-variant KeepFontFaceVariant (@font-face);
+
+@custom-variant KeepFunctionVariant (
+	@function --KeepFunc(--KeepParam <COLOR>#: RED) returns <IDENT>+
+);
+
+.x {
+	@apply KeepUtility KeepOther;
+}
+
+@source inline("KeepSource");
+
+@source not "KeepSourcePath";
+
+@reference "KeepRef.css";
+
+@config "KeepConfig.js";
+
+@plugin "KeepPlugin" {
+	color: RED;
+}
+
+@slot;
 
 ```

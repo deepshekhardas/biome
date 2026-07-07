@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{TwSourceInline, TwSourceInlineFields};
 use biome_formatter::write;
 
@@ -19,7 +20,7 @@ impl FormatNodeRule<TwSourceInline> for FormatTwSourceInline {
             write!(
                 f,
                 [
-                    inline_token.format(),
+                    format_css_token(&inline_token?).lowercase(),
                     l_paren_token.format(),
                     space(),
                     &content.format(),
@@ -31,7 +32,7 @@ impl FormatNodeRule<TwSourceInline> for FormatTwSourceInline {
             write!(
                 f,
                 [
-                    inline_token.format(),
+                    format_css_token(&inline_token?).lowercase(),
                     l_paren_token.format(),
                     &content.format(),
                     r_paren_token.format(),

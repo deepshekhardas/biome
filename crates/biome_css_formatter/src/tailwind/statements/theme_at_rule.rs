@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{TwThemeAtRule, TwThemeAtRuleFields};
 use biome_formatter::write;
 
@@ -12,9 +13,9 @@ impl FormatNodeRule<TwThemeAtRule> for FormatTwThemeAtRule {
             block,
         } = node.as_fields();
 
-        write!(f, [theme_token.format()])?;
+        write!(f, [format_css_token(&theme_token?).lowercase()])?;
         if let Some(name) = name {
-            write!(f, [space(), name.format()])?;
+            write!(f, [space(), format_css_identifier(&name).preserve()])?;
         }
         write!(f, [space(), block.format()])
     }
