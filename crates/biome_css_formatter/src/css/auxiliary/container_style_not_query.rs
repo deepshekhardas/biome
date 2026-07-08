@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssContainerStyleNotQuery, CssContainerStyleNotQueryFields};
 use biome_formatter::write;
 #[derive(Debug, Clone, Default)]
@@ -11,6 +12,13 @@ impl FormatNodeRule<CssContainerStyleNotQuery> for FormatCssContainerStyleNotQue
     ) -> FormatResult<()> {
         let CssContainerStyleNotQueryFields { not_token, query } = node.as_fields();
 
-        write!(f, [not_token.format(), space(), query.format()])
+        write!(
+            f,
+            [
+                format_css_token(&not_token?).preserve(),
+                space(),
+                query.format()
+            ]
+        )
     }
 }

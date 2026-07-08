@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{
     CssPseudoElementFunctionCustomIdentifier, CssPseudoElementFunctionCustomIdentifierFields,
 };
@@ -22,14 +23,19 @@ impl FormatNodeRule<CssPseudoElementFunctionCustomIdentifier>
         } = node.as_fields();
 
         let should_insert_space = f.options().delimiter_spacing().value();
+        let name = name?;
+        let ident = ident?;
 
         write!(
             f,
             [
-                name.format(),
+                format_css_identifier(&name).lowercase(),
                 group(&format_args![
                     l_paren_token.format(),
-                    soft_block_indent_with_maybe_space(&ident.format(), should_insert_space),
+                    soft_block_indent_with_maybe_space(
+                        &format_css_identifier(&ident).preserve(),
+                        should_insert_space
+                    ),
                     r_paren_token.format()
                 ])
             ]

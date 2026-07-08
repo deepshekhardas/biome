@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{CssNamespaceAtRule, CssNamespaceAtRuleFields};
 use biome_formatter::write;
 #[derive(Debug, Clone, Default)]
@@ -15,9 +16,11 @@ impl FormatNodeRule<CssNamespaceAtRule> for FormatCssNamespaceAtRule {
         write!(
             f,
             [
-                namespace_token.format(),
+                format_css_token(&namespace_token?).lowercase(),
                 space(),
-                prefix.format(),
+                prefix
+                    .as_ref()
+                    .map(|prefix| format_css_identifier(prefix).preserve()),
                 space(),
                 url.format(),
                 semicolon_token.format(),

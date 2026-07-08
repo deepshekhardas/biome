@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{CssComposesProperty, CssComposesPropertyFields};
 use biome_formatter::{format_args, write};
 #[derive(Debug, Clone, Default)]
@@ -11,7 +12,15 @@ impl FormatNodeRule<CssComposesProperty> for FormatCssComposesProperty {
             values,
         } = node.as_fields();
 
-        write!(f, [name.format(), colon_token.format()])?;
+        let name = name?;
+
+        write!(
+            f,
+            [
+                format_css_identifier(&name).lowercase(),
+                colon_token.format()
+            ]
+        )?;
 
         if values.len() > 1 {
             return write!(

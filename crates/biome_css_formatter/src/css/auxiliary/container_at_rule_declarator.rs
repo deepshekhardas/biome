@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{CssContainerAtRuleDeclarator, CssContainerAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -17,10 +18,13 @@ impl FormatNodeRule<CssContainerAtRuleDeclarator> for FormatCssContainerAtRuleDe
             query,
         } = node.as_fields();
 
-        write!(f, [container_token.format(), space()])?;
+        write!(
+            f,
+            [format_css_token(&container_token?).lowercase(), space()]
+        )?;
 
-        if name.is_some() {
-            write!(f, [name.format(), space()])?;
+        if let Some(name) = name {
+            write!(f, [format_css_identifier(&name).preserve(), space()])?;
         }
 
         write!(f, [query.format()])

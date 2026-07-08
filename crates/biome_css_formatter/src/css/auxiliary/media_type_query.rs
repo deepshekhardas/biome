@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use crate::utils::media_query_comments::{fmt_media_query_leading, fmt_media_query_node};
 use biome_css_syntax::{CssMediaTypeQuery, CssMediaTypeQueryFields};
 use biome_formatter::write;
@@ -13,8 +14,8 @@ impl FormatNodeRule<CssMediaTypeQuery> for FormatCssMediaTypeQuery {
     fn fmt_fields(&self, node: &CssMediaTypeQuery, f: &mut CssFormatter) -> FormatResult<()> {
         let CssMediaTypeQueryFields { modifier, ty } = node.as_fields();
 
-        if modifier.is_some() {
-            write!(f, [modifier.format(), space()])?;
+        if let Some(modifier) = modifier {
+            write!(f, [format_css_token(&modifier).preserve(), space()])?;
         }
 
         write!(f, [ty.format()])

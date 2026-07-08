@@ -154,6 +154,10 @@ impl CssFormatOptions {
         self.delimiter_spacing
     }
 
+    pub fn file_source(&self) -> CssFileSource {
+        self._file_source
+    }
+
     pub fn trailing_newline(&self) -> TrailingNewline {
         self.trailing_newline
     }

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssSupportsAndCondition, CssSupportsAndConditionFields};
 use biome_formatter::write;
 
@@ -17,7 +18,7 @@ impl FormatNodeRule<CssSupportsAndCondition> for FormatCssSupportsAndCondition {
             [
                 left.format(),
                 space(),
-                and_token.format(),
+                format_css_token(&and_token?).preserve(),
                 soft_line_break_or_space(),
                 right.format()
             ]

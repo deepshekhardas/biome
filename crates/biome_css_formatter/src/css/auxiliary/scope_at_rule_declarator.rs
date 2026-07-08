@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssScopeAtRuleDeclarator, CssScopeAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -13,7 +14,7 @@ impl FormatNodeRule<CssScopeAtRuleDeclarator> for FormatCssScopeAtRuleDeclarator
     ) -> FormatResult<()> {
         let CssScopeAtRuleDeclaratorFields { scope_token, range } = node.as_fields();
 
-        write!(f, [scope_token.format()])?;
+        write!(f, [format_css_token(&scope_token?).lowercase()])?;
 
         if range.is_some() {
             write!(f, [space(), range.format()])?;

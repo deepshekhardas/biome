@@ -1,5 +1,8 @@
 use crate::prelude::*;
-use biome_css_syntax::{CssValueAtRuleImportClause, CssValueAtRuleImportClauseFields};
+use crate::utils::case::{format_css_identifier, format_css_token};
+use biome_css_syntax::{
+    AnyCssValueAtRuleImportSource, CssValueAtRuleImportClause, CssValueAtRuleImportClauseFields,
+};
 use biome_formatter::write;
 
 #[derive(Debug, Clone, Default)]
@@ -15,15 +18,22 @@ impl FormatNodeRule<CssValueAtRuleImportClause> for FormatCssValueAtRuleImportCl
             from_token,
             source,
         } = node.as_fields();
+        let source = source?;
+        let formatted_source = format_with(|f| match &source {
+            AnyCssValueAtRuleImportSource::CssIdentifier(source) => {
+                format_css_identifier(source).preserve().fmt(f)
+            }
+            AnyCssValueAtRuleImportSource::CssString(source) => source.format().fmt(f),
+        });
 
         write!(
             f,
             [
                 specifiers.format(),
                 space(),
-                from_token.format(),
+                format_css_token(&from_token?).lowercase(),
                 space(),
-                source.format()
+                formatted_source
             ]
         )
     }

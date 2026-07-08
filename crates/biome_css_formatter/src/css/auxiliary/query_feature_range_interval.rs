@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, should_preserve_query_feature_name};
 use biome_css_syntax::{CssQueryFeatureRangeInterval, CssQueryFeatureRangeIntervalFields};
 use biome_formatter::write;
 
@@ -17,6 +18,12 @@ impl FormatNodeRule<CssQueryFeatureRangeInterval> for FormatCssQueryFeatureRange
             right_comparison,
             right,
         } = node.as_fields();
+        let name = name?;
+        let formatted_name = if should_preserve_query_feature_name(&name) {
+            format_css_identifier(&name).preserve()
+        } else {
+            format_css_identifier(&name).lowercase()
+        };
 
         write!(
             f,
@@ -25,7 +32,7 @@ impl FormatNodeRule<CssQueryFeatureRangeInterval> for FormatCssQueryFeatureRange
                 space(),
                 left_comparison.format(),
                 space(),
-                name.format(),
+                formatted_name,
                 space(),
                 right_comparison.format(),
                 space(),

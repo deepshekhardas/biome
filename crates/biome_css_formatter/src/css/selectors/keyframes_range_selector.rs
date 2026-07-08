@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssKeyframesRangeSelector, CssKeyframesRangeSelectorFields};
 use biome_formatter::write;
 
@@ -12,6 +13,13 @@ impl FormatNodeRule<CssKeyframesRangeSelector> for FormatCssKeyframesRangeSelect
     ) -> FormatResult<()> {
         let CssKeyframesRangeSelectorFields { name, percentage } = node.as_fields();
 
-        write!(f, [name.format(), space(), percentage.format()])
+        write!(
+            f,
+            [
+                format_css_token(&name?).preserve(),
+                space(),
+                percentage.format()
+            ]
+        )
     }
 }

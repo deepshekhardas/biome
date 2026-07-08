@@ -1,9 +1,10 @@
 use crate::CssFormatter;
 use crate::comments::CssComments;
 use crate::prelude::*;
+use crate::utils::case::format_css_wide_keyword_value;
 use biome_css_syntax::{
-    CssFunction, CssGenericDelimiter, CssGenericProperty, CssLanguage, CssSyntaxKind,
-    ScssExpression, ScssIncludeArgumentList, css_grid_template_property,
+    CssFunction, CssGenericDelimiter, CssGenericProperty, CssIdentifier, CssLanguage,
+    CssSyntaxKind, ScssExpression, ScssIncludeArgumentList, css_grid_template_property,
 };
 use biome_formatter::{CstFormatContext, format_args, write};
 use biome_formatter::{FormatOptions, FormatResult};
@@ -61,7 +62,7 @@ fn try_write_fill_comma_groups<N, I>(
 ) -> Option<FormatResult<()>>
 where
     N: AstNodeList<Language = CssLanguage, Node = I> + AstNode<Language = CssLanguage>,
-    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
 {
     if !matches!(layout, ValueListLayout::Fill) {
         return None;
@@ -95,7 +96,7 @@ fn write_fill_comma_groups<N, I>(
 ) -> FormatResult<()>
 where
     N: AstNodeList<Language = CssLanguage, Node = I> + AstNode<Language = CssLanguage>,
-    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
 {
     let mut groups: Vec<Vec<I>> = Vec::new();
     let mut current_group: Vec<I> = Vec::new();
@@ -124,7 +125,7 @@ where
 
             for element in group_items {
                 let is_comma = is_comma_delimiter(element);
-                let formatted = element.clone().into_format();
+                let formatted = format_component_value_element(element.clone());
 
                 inner_fill.entry(
                     &format_once(|f| {
@@ -151,7 +152,7 @@ where
 pub(crate) fn write_component_value_list<N, I>(node: &N, f: &mut CssFormatter) -> FormatResult<()>
 where
     N: AstNodeList<Language = CssLanguage, Node = I> + AstNode<Language = CssLanguage>,
-    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
 {
     let layout = get_value_list_layout(node, f.context().comments(), f);
 
@@ -173,7 +174,8 @@ where
         if node.len() == 1 {
             let mut builder = f.join_nodes_with_soft_line();
 
-            for (element, formatted) in node.iter().zip(node.iter().formatted()) {
+            for element in node.iter() {
+                let formatted = format_component_value_element(element.clone());
                 builder.entry(element.syntax(), &formatted);
             }
 
@@ -193,7 +195,8 @@ where
             let mut fill = f.fill();
             let mut at_group_boundary = false;
 
-            for (element, formatted) in node.iter().zip(node.iter().formatted()) {
+            for element in node.iter() {
+                let formatted = format_component_value_element(element.clone());
                 fill.entry(
                     &format_once(|f| {
                         // If the current element is not a comma, insert a soft line break or a space.
@@ -296,6 +299,20 @@ where
             write!(f, [group(&values)])
         }
     }
+}
+
+/// Formats value-list identifiers such as `color: INITIAL` through keyword casing.
+fn format_component_value_element<I>(element: I) -> impl Format<CssFormatContext>
+where
+    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
+{
+    format_with(move |f| {
+        if let Some(identifier) = CssIdentifier::cast_ref(element.syntax()) {
+            return format_css_wide_keyword_value(&identifier).fmt(f);
+        }
+
+        element.clone().into_format().fmt(f)
+    })
 }
 
 #[derive(Copy, Clone, Debug)]

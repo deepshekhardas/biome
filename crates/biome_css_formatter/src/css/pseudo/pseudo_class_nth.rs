@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssPseudoClassNth, CssPseudoClassNthFields};
 use biome_formatter::write;
 
@@ -13,7 +14,14 @@ impl FormatNodeRule<CssPseudoClassNth> for FormatCssPseudoClassNth {
             offset,
         } = node.as_fields();
 
-        write!(f, [sign.format(), value.format(), symbol_token.format(),])?;
+        write!(
+            f,
+            [
+                sign.format(),
+                value.format(),
+                format_css_token(&symbol_token?).lowercase(),
+            ]
+        )?;
 
         if offset.is_some() {
             write!(f, [soft_line_break_or_space(), offset.format()])?;

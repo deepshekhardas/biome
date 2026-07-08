@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssImportSupports, CssImportSupportsFields};
 use biome_formatter::{format_args, write};
 
@@ -18,7 +19,7 @@ impl FormatNodeRule<CssImportSupports> for FormatCssImportSupports {
         write!(
             f,
             [
-                supports_token.format(),
+                format_css_token(&supports_token?).lowercase(),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent_with_maybe_space(&condition.format(), should_insert_space),

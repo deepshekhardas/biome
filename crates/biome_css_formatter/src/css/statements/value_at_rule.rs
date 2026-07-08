@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssValueAtRule, CssValueAtRuleFields};
 use biome_formatter::write;
 
@@ -15,7 +16,7 @@ impl FormatNodeRule<CssValueAtRule> for FormatCssValueAtRule {
         write!(
             f,
             [
-                value_token.format(),
+                format_css_token(&value_token?).lowercase(),
                 space(),
                 clause.format(),
                 semicolon_token.format(),

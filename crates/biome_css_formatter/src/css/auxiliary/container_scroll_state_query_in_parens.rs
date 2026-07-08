@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{
     CssContainerScrollStateQueryInParens, CssContainerScrollStateQueryInParensFields,
 };
@@ -23,7 +24,7 @@ impl FormatNodeRule<CssContainerScrollStateQueryInParens>
         write!(
             f,
             [
-                name.format(),
+                format_css_identifier(&name?).preserve(),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent(&query.format()),

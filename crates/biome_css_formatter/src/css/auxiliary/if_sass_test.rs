@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssIfSassTest, CssIfSassTestFields};
 use biome_formatter::{format_args, write};
 #[derive(Debug, Clone, Default)]
@@ -15,7 +16,7 @@ impl FormatNodeRule<CssIfSassTest> for FormatCssIfSassTest {
         write!(
             f,
             [
-                sass_token.format(),
+                format_css_token(&sass_token?).lowercase(),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent(&test.format()),

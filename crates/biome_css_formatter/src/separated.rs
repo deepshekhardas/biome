@@ -108,7 +108,6 @@ type CssFormatSeparatedIterWithOptions<Node, Options, C> = FormatSeparatedIter<
 >;
 
 /// AST Separated list formatting extension methods with options
-#[expect(dead_code)]
 pub(crate) trait FormatAstSeparatedListWithOptionsExtension<O>:
     AstSeparatedList<Language = CssLanguage>
 {
