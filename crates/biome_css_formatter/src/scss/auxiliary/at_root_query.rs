@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssAtRootQuery, ScssAtRootQueryFields};
 use biome_formatter::{format_args, write};
 
@@ -19,7 +20,7 @@ impl FormatNodeRule<ScssAtRootQuery> for FormatScssAtRootQuery {
             f,
             [group(&format_args![
                 l_paren_token.format(),
-                modifier.format(),
+                format_css_token(&modifier?).preserve(),
                 colon_token.format(),
                 space(),
                 group(&indent(&queries.format())),

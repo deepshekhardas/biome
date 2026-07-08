@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{
     CssDeclarationOrRuleBlock, ScssAtRootAtRule, ScssAtRootAtRuleFields, ScssAtRootSelector,
 };
@@ -16,7 +17,7 @@ impl FormatNodeRule<ScssAtRootAtRule> for FormatScssAtRootAtRule {
             block,
         } = node.as_fields();
 
-        write!(f, [at_root_token.format()])?;
+        write!(f, [format_css_token(&at_root_token?).lowercase()])?;
 
         if let Some(query) = query {
             write!(f, [space(), query.format()])?;

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssEachAtRule, ScssEachAtRuleFields};
 use biome_formatter::{format_args, write};
 
@@ -16,7 +17,7 @@ impl FormatNodeRule<ScssEachAtRule> for FormatScssEachAtRule {
         write!(
             f,
             [
-                each_token.format(),
+                format_css_token(&each_token?).lowercase(),
                 group(&format_args![
                     space(),
                     indent(&group(&header.format())),

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{ScssForwardAsClause, ScssForwardAsClauseFields};
 use biome_formatter::{format_args, write};
 
@@ -12,13 +13,14 @@ impl FormatNodeRule<ScssForwardAsClause> for FormatScssForwardAsClause {
             prefix,
             star_token,
         } = node.as_fields();
+        let prefix = prefix?;
 
         write!(
             f,
             [group(&format_args![
-                as_token.format(),
+                format_css_token(&as_token?).preserve(),
                 space(),
-                prefix.format(),
+                format_css_identifier(&prefix).preserve(),
                 star_token.format()
             ])]
         )

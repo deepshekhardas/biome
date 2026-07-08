@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssHideClause, ScssHideClauseFields};
 use biome_formatter::{format_args, write};
 
@@ -15,7 +16,7 @@ impl FormatNodeRule<ScssHideClause> for FormatScssHideClause {
         write!(
             f,
             [group(&format_args![
-                hide_token.format(),
+                format_css_token(&hide_token?).preserve(),
                 space(),
                 members.format()
             ])]

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssForwardAtRule, ScssForwardAtRuleFields};
 use biome_formatter::write;
 
@@ -16,7 +17,14 @@ impl FormatNodeRule<ScssForwardAtRule> for FormatScssForwardAtRule {
             semicolon_token,
         } = node.as_fields();
 
-        write!(f, [forward_token.format(), space(), url.format()])?;
+        write!(
+            f,
+            [
+                format_css_token(&forward_token?).lowercase(),
+                space(),
+                url.format()
+            ]
+        )?;
 
         if let Some(as_clause) = as_clause {
             write!(f, [space(), as_clause.format()])?;

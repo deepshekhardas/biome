@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{
     ScssBinaryExpression, ScssBinaryExpressionFields, is_in_scss_control_condition_sequence,
     is_in_scss_parenthesized_expression, is_scss_parenthesized_expression,
@@ -10,13 +11,22 @@ pub(crate) struct FormatScssBinaryExpression;
 
 impl FormatNodeRule<ScssBinaryExpression> for FormatScssBinaryExpression {
     fn fmt_fields(&self, node: &ScssBinaryExpression, f: &mut CssFormatter) -> FormatResult<()> {
-        let left = node.left();
+        let left = node.left()?;
         let formatted_right = FormatScssBinaryRightSide::new(node);
 
         if is_in_scss_control_condition_sequence(node) {
-            write!(f, [left.format(), formatted_right])
+            write!(
+                f,
+                [format_css_identifier(&left).preserve(), formatted_right]
+            )
         } else {
-            write!(f, [group(&format_args![left.format(), formatted_right])])
+            write!(
+                f,
+                [group(&format_args![
+                    format_css_identifier(&left).preserve(),
+                    formatted_right
+                ])]
+            )
         }
     }
 }
@@ -54,18 +64,26 @@ impl Format<CssFormatContext> for FormatScssBinaryRightSide<'_> {
             operator, right, ..
         } = self.node.as_fields();
 
-        write!(f, [space(), operator.format()])?;
+        write!(f, [space(), format_css_token(&operator?).preserve()])?;
 
         if self.should_indent() {
+            let right = right?;
             write!(
                 f,
                 [indent(&format_args![
                     soft_line_break_or_space(),
-                    right.format()
+                    format_css_identifier(&right).preserve()
                 ])]
             )
         } else {
-            write!(f, [soft_line_break_or_space(), right.format()])
+            let right = right?;
+            write!(
+                f,
+                [
+                    soft_line_break_or_space(),
+                    format_css_identifier(&right).preserve()
+                ]
+            )
         }
     }
 }

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssVariableModifier, ScssVariableModifierFields};
 use biome_formatter::write;
 
@@ -9,6 +10,9 @@ impl FormatNodeRule<ScssVariableModifier> for FormatScssVariableModifier {
     fn fmt_fields(&self, node: &ScssVariableModifier, f: &mut CssFormatter) -> FormatResult<()> {
         let ScssVariableModifierFields { excl_token, value } = node.as_fields();
 
-        write!(f, [excl_token.format(), value.format()])
+        write!(
+            f,
+            [excl_token.format(), format_css_token(&value?).preserve()]
+        )
     }
 }

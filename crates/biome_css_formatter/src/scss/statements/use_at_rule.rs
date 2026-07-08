@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssUseAtRule, ScssUseAtRuleFields};
 use biome_formatter::write;
 
@@ -15,7 +16,14 @@ impl FormatNodeRule<ScssUseAtRule> for FormatScssUseAtRule {
             semicolon_token,
         } = node.as_fields();
 
-        write!(f, [use_token.format(), space(), url.format()])?;
+        write!(
+            f,
+            [
+                format_css_token(&use_token?).lowercase(),
+                space(),
+                url.format()
+            ]
+        )?;
 
         if let Some(as_clause) = as_clause {
             write!(f, [space(), as_clause.format()])?;

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use crate::utils::scss_control_condition::ScssControlConditionLayout;
 use biome_css_syntax::{ScssWhileAtRule, ScssWhileAtRuleFields};
 use biome_formatter::{format_args, write};
@@ -37,7 +38,7 @@ impl FormatNodeRule<ScssWhileAtRule> for FormatScssWhileAtRule {
         write!(
             f,
             [
-                while_token.format(),
+                format_css_token(&while_token?).lowercase(),
                 space(),
                 group(&format_args![formatted_condition, block_separator])
                     .with_group_id(Some(header_group_id)),

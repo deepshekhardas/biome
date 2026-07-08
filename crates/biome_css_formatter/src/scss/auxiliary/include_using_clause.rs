@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssIncludeUsingClause, ScssIncludeUsingClauseFields};
 use biome_formatter::write;
 
@@ -12,6 +13,13 @@ impl FormatNodeRule<ScssIncludeUsingClause> for FormatScssIncludeUsingClause {
             parameters,
         } = node.as_fields();
 
-        write!(f, [using_token.format(), space(), parameters.format()])
+        write!(
+            f,
+            [
+                format_css_token(&using_token?).preserve(),
+                space(),
+                parameters.format()
+            ]
+        )
     }
 }

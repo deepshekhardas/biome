@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{
     AnyCssFunction, ScssParenthesizedExpression, ScssUnaryExpression, ScssUnaryExpressionFields, T,
     is_in_scss_control_condition_sequence,
@@ -31,12 +32,29 @@ impl FormatNodeRule<ScssUnaryExpression> for FormatScssUnaryExpression {
                 }
             });
 
-            write!(f, [operator.format(), separator, expression.format()])
+            write!(
+                f,
+                [
+                    format_css_token(&operator).preserve(),
+                    separator,
+                    expression.format()
+                ]
+            )
         } else if is_source_spaced_minus_function {
             // Prettier keeps the source space in `- pow()`.
-            write!(f, [operator.format(), space(), expression.format()])
+            write!(
+                f,
+                [
+                    format_css_token(&operator).preserve(),
+                    space(),
+                    expression.format()
+                ]
+            )
         } else {
-            write!(f, [operator.format(), expression.format()])
+            write!(
+                f,
+                [format_css_token(&operator).preserve(), expression.format()]
+            )
         }
     }
 }

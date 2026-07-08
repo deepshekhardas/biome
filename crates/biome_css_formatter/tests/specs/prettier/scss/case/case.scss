@@ -4,7 +4,7 @@
 //   in selectors, as well as function names and property keywords.
 // - Other things should mostly be lowercase.
 
-@IMPORT Keep;
+@IMPORT "Keep";
 
 HTML#KeepId.KeepClass,
 a[HREF=KeepAttrValue]:HOVER::FIRST-letter,
@@ -55,14 +55,12 @@ svg[viewBox] linearGradient,
 }
 
 $KeepTopLevelVar: val;
-@KeepLessVar: val;
 
 @mixin KeepMixinName($Keep: 15IN, $Keep: $Keep15IN, $Keep: Keep-1E-2Em) {
     $KeepVar: KeepFuncName();
     #{$KeepInterpolationVar}: val;
     #{$Keep + 15PX}: val;
     #{$Keep + $Keep15PX}: val;
-    @KeepLessVar: val;
     @extend %KeepPlaceholderSelector;
 
     #{$Keep}[#{$Keep}][#{Keep}^=#{Keep-1A}]:#{$Keep} {

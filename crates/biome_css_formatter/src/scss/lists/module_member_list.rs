@@ -1,5 +1,7 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::ScssModuleMemberList;
+use biome_formatter::write;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatScssModuleMemberList;
@@ -9,12 +11,32 @@ impl FormatRule<ScssModuleMemberList> for FormatScssModuleMemberList {
 
     fn fmt(&self, node: &ScssModuleMemberList, f: &mut CssFormatter) -> FormatResult<()> {
         let separator = soft_line_break_or_space();
-        let mut joiner = f.join_with(&separator);
+        let mut members = node.elements();
 
-        for formatted in node.format_separated(",") {
-            joiner.entry(&formatted);
+        let Some(first) = members.next() else {
+            return Ok(());
+        };
+
+        write!(
+            f,
+            [
+                format_css_identifier(first.node()?).preserve(),
+                first.trailing_separator()?.format()
+            ]
+        )?;
+
+        for element in members {
+            let member = element.node()?;
+            write!(
+                f,
+                [
+                    &separator,
+                    format_css_identifier(member).preserve(),
+                    element.trailing_separator()?.format()
+                ]
+            )?;
         }
 
-        joiner.finish()
+        Ok(())
     }
 }
