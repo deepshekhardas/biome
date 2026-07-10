@@ -490,7 +490,8 @@ fn format(
     let options = settings.format_options::<HtmlLanguage>(biome_path, document_file_source);
 
     let tree = parse.syntax(&workspace_db);
-    let formatted = format_node(options, &tree, true)?;
+    // This path has no parsed snippets to replace embedded placeholders.
+    let formatted = format_node(options, &tree, false)?;
 
     match formatted.print() {
         Ok(printed) => Ok(printed),
