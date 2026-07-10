@@ -23,7 +23,10 @@ import TextInput from './TextInput.vue';
 # Formatted
 
 ```vue
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Button from './Button.vue';
+import TextInput from './TextInput.vue';
+</script>
 
 <template>
 	<Button label="test button" />
@@ -32,3 +35,9 @@ import TextInput from './TextInput.vue';
 </template>
 
 ```
+
+
+
+## Unimplemented nodes/tokens
+
+"\nimport Button from './Button.vue';\nimport TextInput from './TextInput.vue';\n" => 24..101

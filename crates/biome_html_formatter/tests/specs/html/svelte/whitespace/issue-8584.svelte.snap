@@ -18,8 +18,16 @@ info: svelte/whitespace/issue-8584.svelte
 # Formatted
 
 ```svelte
-<script></script>
+<script>
+	const framework = "Astro";
+</script>
 
 <h1>Hello, {framework} and Svelte!</h1>
 
 ```
+
+
+
+## Unimplemented nodes/tokens
+
+"\n\tconst framework = \"Astro\";\n" => 8..37

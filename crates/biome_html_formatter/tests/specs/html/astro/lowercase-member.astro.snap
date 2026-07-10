@@ -25,6 +25,9 @@ let Data;
 
 ```astro
 ---
+let form;
+let foo;
+let Data;
 ---
 
 <form.Field></form.Field>
@@ -35,3 +38,9 @@ let Data;
 <foo.Bar attr.data-foo="value" />
 
 ```
+
+
+
+## Unimplemented nodes/tokens
+
+"let form;\nlet foo;\nlet Data;\n-" => 4..34

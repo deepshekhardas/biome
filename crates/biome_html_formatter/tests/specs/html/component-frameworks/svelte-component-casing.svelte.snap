@@ -25,7 +25,11 @@ info: component-frameworks/svelte-component-casing.svelte
 # Formatted
 
 ```svelte
-<script lang="ts"></script>
+<script lang="ts">
+  import Button from './Button.svelte';
+  import TextInput from './TextInput.svelte';
+  import Select from './Select.svelte';
+</script>
 
 <Button label="test button" />
 <TextInput placeholder="enter text" />
@@ -37,3 +41,9 @@ info: component-frameworks/svelte-component-casing.svelte
 </select>
 
 ```
+
+
+
+## Unimplemented nodes/tokens
+
+"\n  import Button from './Button.svelte';\n  import TextInput from './TextInput.svelte';\n  import Select from './Select.svelte';\n" => 18..145

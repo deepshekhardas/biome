@@ -23,6 +23,8 @@ import TextInput from './TextInput.astro';
 
 ```astro
 ---
+import Button from './Button.astro';
+import TextInput from './TextInput.astro';
 ---
 
 <Button label="test button" />
@@ -31,3 +33,9 @@ import TextInput from './TextInput.astro';
 <input type="text">
 
 ```
+
+
+
+## Unimplemented nodes/tokens
+
+"import Button from './Button.astro';\nimport TextInput from './TextInput.astro';\n-" => 4..85
