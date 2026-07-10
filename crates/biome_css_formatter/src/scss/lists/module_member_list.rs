@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
 use biome_css_syntax::ScssModuleMemberList;
 use biome_formatter::write;
 
@@ -20,7 +19,7 @@ impl FormatRule<ScssModuleMemberList> for FormatScssModuleMemberList {
         write!(
             f,
             [
-                format_css_identifier(first.node()?).preserve(),
+                first.node()?.format().with_case(CssCase::Preserve),
                 first.trailing_separator()?.format()
             ]
         )?;
@@ -31,7 +30,7 @@ impl FormatRule<ScssModuleMemberList> for FormatScssModuleMemberList {
                 f,
                 [
                     &separator,
-                    format_css_identifier(member).preserve(),
+                    member.format().with_case(CssCase::Preserve),
                     element.trailing_separator()?.format()
                 ]
             )?;

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssSupportsFeatureSelector, CssSupportsFeatureSelectorFields};
 use biome_formatter::{format_args, write};
 
@@ -23,7 +22,7 @@ impl FormatNodeRule<CssSupportsFeatureSelector> for FormatCssSupportsFeatureSele
         write!(
             f,
             [group(&format_args![
-                format_css_token(&selector_token?).preserve(),
+                selector_token.format().with_case(CssCase::Preserve),
                 l_paren_token.format(),
                 soft_block_indent_with_maybe_space(&selector.format(), should_insert_space),
                 r_paren_token.format()

@@ -1,8 +1,6 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
-use biome_css_syntax::{
-    CssGenericComponentValueList, CssIdentifier, CssSyntaxNode, map_syntax_node,
-};
+use crate::utils::case::root_identifier_case;
+use biome_css_syntax::{CssIdentifier, CssSyntaxNode, map_syntax_node};
 use biome_formatter::{FormatOwnedWithRule, FormatRefWithRule, FormatResult};
 
 #[derive(Debug, Copy, Clone, Default)]
@@ -13,11 +11,9 @@ impl FormatRule<CssSyntaxNode> for FormatCssSyntaxNode {
 
     fn fmt(&self, node: &CssSyntaxNode, f: &mut CssFormatter) -> FormatResult<()> {
         if let Some(identifier) = CssIdentifier::cast_ref(node)
-            && identifier
-                .parent::<CssGenericComponentValueList>()
-                .is_some()
+            && let Some(case) = root_identifier_case(&identifier)
         {
-            return format_css_identifier(&identifier).preserve().fmt(f);
+            return identifier.format().with_case(case).fmt(f);
         }
 
         map_syntax_node!(node.clone(), node => node.format().fmt(f))

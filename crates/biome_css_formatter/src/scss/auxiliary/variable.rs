@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{ScssVariable, ScssVariableFields};
 use biome_formatter::write;
 
@@ -14,7 +13,7 @@ impl FormatNodeRule<ScssVariable> for FormatScssVariable {
             f,
             [
                 dollar_token.format(),
-                format_css_identifier(&name?).preserve()
+                name.format().with_case(CssCase::Preserve)
             ]
         )
     }

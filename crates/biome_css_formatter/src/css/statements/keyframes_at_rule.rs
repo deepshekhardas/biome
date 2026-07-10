@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssKeyframesAtRule, CssKeyframesAtRuleFields};
 use biome_formatter::write;
 
@@ -16,7 +15,7 @@ impl FormatNodeRule<CssKeyframesAtRule> for FormatCssKeyframesAtRule {
         write!(
             f,
             [
-                format_css_token(&keyframes_token?).lowercase(),
+                keyframes_token.format().with_case(CssCase::Lowercase),
                 space(),
                 name.format(),
                 space(),

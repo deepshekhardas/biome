@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{CssPositionTryAtRuleDeclarator, CssPositionTryAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -16,14 +15,13 @@ impl FormatNodeRule<CssPositionTryAtRuleDeclarator> for FormatCssPositionTryAtRu
             position_try_token,
             name,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&position_try_token?).lowercase(),
+                position_try_token.format().with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve()
+                name.format()
             ]
         )
     }

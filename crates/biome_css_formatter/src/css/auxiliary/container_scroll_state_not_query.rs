@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssContainerScrollStateNotQuery, CssContainerScrollStateNotQueryFields};
 use biome_formatter::write;
 #[derive(Debug, Clone, Default)]
@@ -15,7 +14,7 @@ impl FormatNodeRule<CssContainerScrollStateNotQuery> for FormatCssContainerScrol
         write!(
             f,
             [
-                format_css_token(&not_token?).preserve(),
+                not_token.format().with_case(CssCase::Preserve),
                 space(),
                 query.format()
             ]

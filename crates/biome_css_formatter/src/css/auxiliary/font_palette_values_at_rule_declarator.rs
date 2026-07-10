@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{
     CssFontPaletteValuesAtRuleDeclarator, CssFontPaletteValuesAtRuleDeclaratorFields,
 };
@@ -20,14 +19,15 @@ impl FormatNodeRule<CssFontPaletteValuesAtRuleDeclarator>
             font_palette_values_token,
             name,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&font_palette_values_token?).lowercase(),
+                font_palette_values_token?
+                    .format()
+                    .with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve()
+                name.format()
             ]
         )
     }

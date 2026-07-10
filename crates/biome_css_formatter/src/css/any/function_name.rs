@@ -2,13 +2,23 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyCssFunctionName;
+use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyCssFunctionName;
+pub(crate) struct FormatAnyCssFunctionName {
+    case: CssCase,
+}
+impl FormatRuleWithOptions<AnyCssFunctionName> for FormatAnyCssFunctionName {
+    type Options = CssCase;
+    fn with_options(mut self, options: Self::Options) -> Self {
+        self.case = options;
+        self
+    }
+}
 impl FormatRule<AnyCssFunctionName> for FormatAnyCssFunctionName {
     type Context = CssFormatContext;
     fn fmt(&self, node: &AnyCssFunctionName, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
-            AnyCssFunctionName::CssIdentifier(node) => node.format().fmt(f),
+            AnyCssFunctionName::CssIdentifier(node) => node.format().with_case(self.case).fmt(f),
             AnyCssFunctionName::ScssInterpolatedIdentifier(node) => node.format().fmt(f),
             AnyCssFunctionName::ScssModuleMemberAccess(node) => node.format().fmt(f),
         }

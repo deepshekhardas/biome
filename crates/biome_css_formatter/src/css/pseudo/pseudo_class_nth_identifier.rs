@@ -12,6 +12,6 @@ impl FormatNodeRule<CssPseudoClassNthIdentifier> for FormatCssPseudoClassNthIden
     ) -> FormatResult<()> {
         let CssPseudoClassNthIdentifierFields { value } = node.as_fields();
 
-        write!(f, [value.format()?.with_lowercase()])
+        write!(f, [value.format().with_case(CssCase::Lowercase)])
     }
 }

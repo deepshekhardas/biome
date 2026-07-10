@@ -2,7 +2,6 @@ use biome_css_syntax::{CssFunctionAtRuleDeclarator, CssFunctionAtRuleDeclaratorF
 use biome_formatter::{format_args, write};
 
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssFunctionAtRuleDeclarator;
@@ -21,14 +20,13 @@ impl FormatNodeRule<CssFunctionAtRuleDeclarator> for FormatCssFunctionAtRuleDecl
             l_paren_token,
             returns,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&function_token?).lowercase(),
+                function_token.format().with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve(),
+                name.format(),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent(&parameters.format()),

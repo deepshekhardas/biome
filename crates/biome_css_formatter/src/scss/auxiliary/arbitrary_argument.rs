@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{ScssArbitraryArgument, ScssArbitraryArgumentFields};
 use biome_formatter::write;
 
@@ -12,21 +11,12 @@ impl FormatNodeRule<ScssArbitraryArgument> for FormatScssArbitraryArgument {
             dotdotdot_token,
         } = node.as_fields();
 
-        let value = value?;
-
-        if let Some(identifier) = value
-            .as_any_css_value()
-            .and_then(|value| value.as_css_identifier())
-        {
-            write!(
-                f,
-                [
-                    format_css_identifier(identifier).preserve(),
-                    dotdotdot_token.format()
-                ]
-            )
-        } else {
-            write!(f, [value.format(), dotdotdot_token.format()])
-        }
+        write!(
+            f,
+            [
+                value.format().with_case(CssCase::Preserve),
+                dotdotdot_token.format()
+            ]
+        )
     }
 }

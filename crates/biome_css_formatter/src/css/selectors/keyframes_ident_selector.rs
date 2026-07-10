@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssKeyframesIdentSelector, CssKeyframesIdentSelectorFields};
 use biome_formatter::write;
 
@@ -13,6 +12,6 @@ impl FormatNodeRule<CssKeyframesIdentSelector> for FormatCssKeyframesIdentSelect
     ) -> FormatResult<()> {
         let CssKeyframesIdentSelectorFields { selector } = node.as_fields();
 
-        write!(f, [format_css_token(&selector?).lowercase()])
+        write!(f, [selector.format().with_case(CssCase::Lowercase)])
     }
 }

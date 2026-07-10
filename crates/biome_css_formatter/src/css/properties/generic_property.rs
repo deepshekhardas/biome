@@ -1,12 +1,11 @@
 use crate::prelude::*;
-use crate::utils::case::CssIdentifierCase;
 use crate::utils::comment_trivia::has_source_gap_before_token;
 use crate::utils::component_value_list::{ValueListLayout, get_value_list_layout};
 use biome_css_syntax::{
-    AnyCssDeclarationName, AnyCssGenericPropertyValueOrExpression, AnyCssSelectorIdentifier,
-    CssContainerStyleInParens, CssContainerStyleQueryInParens, CssDeclaration, CssGenericProperty,
-    CssGenericPropertyFields, CssIdentifier, CssIfStyleTest, CssIfSupportsTest, CssImportSupports,
-    CssLanguage, CssPseudoClassFunctionIdentifier, CssPseudoClassIdentifier, CssQualifiedRule,
+    AnyCssGenericPropertyValueOrExpression, AnyCssSelectorIdentifier, CssContainerStyleInParens,
+    CssContainerStyleQueryInParens, CssDeclaration, CssGenericProperty, CssGenericPropertyFields,
+    CssIfStyleTest, CssIfSupportsTest, CssImportSupports, CssLanguage,
+    CssPseudoClassFunctionIdentifier, CssPseudoClassIdentifier, CssQualifiedRule,
     CssSupportsFeatureDeclaration,
 };
 use biome_formatter::comments::SourceComment;
@@ -21,9 +20,8 @@ impl FormatNodeRule<CssGenericProperty> for FormatCssGenericProperty {
     fn fmt_fields(&self, node: &CssGenericProperty, f: &mut CssFormatter) -> FormatResult<()> {
         let CssGenericPropertyFields { name, .. } = node.as_fields();
         let colon_comments = CssPropertyColonComments::new(node);
-        let name = name?;
 
-        write_property_name(node, &name, f)?;
+        write!(f, [name.format().with_case(property_name_case(node))])?;
         colon_comments.fmt_colon_boundary(f)?;
         colon_comments.fmt_value_boundary(f)
     }
@@ -47,45 +45,15 @@ impl FormatNodeRule<CssGenericProperty> for FormatCssGenericProperty {
     }
 }
 
-fn write_property_name(
-    property: &CssGenericProperty,
-    name: &AnyCssDeclarationName,
-    f: &mut CssFormatter,
-) -> FormatResult<()> {
-    let Some(identifier) = name.as_css_identifier() else {
-        return write!(f, [name.format()]);
-    };
-
-    if is_already_lowercase(identifier) || should_preserve_property_name(property) {
-        write!(
-            f,
-            [identifier
-                .format()
-                .with_options(CssIdentifierCase::Preserve)]
-        )
-    } else {
-        write!(
-            f,
-            [identifier
-                .format()
-                .with_options(CssIdentifierCase::Lowercase)]
-        )
-    }
-}
-
-fn is_already_lowercase(name: &CssIdentifier) -> bool {
-    name.value_token().is_ok_and(|token| {
-        token
-            .token_text_trimmed()
-            .bytes()
-            .all(|byte| !byte.is_ascii_uppercase())
-    })
-}
-
-fn should_preserve_property_name(property: &CssGenericProperty) -> bool {
-    is_support_or_style_test_declaration(property)
+fn property_name_case(property: &CssGenericProperty) -> CssCase {
+    if is_support_or_style_test_declaration(property)
         || is_css_modules_import_export_declaration(property)
         || is_bogus_recovery_declaration(property)
+    {
+        CssCase::Preserve
+    } else {
+        CssCase::Lowercase
+    }
 }
 
 fn is_support_or_style_test_declaration(property: &CssGenericProperty) -> bool {

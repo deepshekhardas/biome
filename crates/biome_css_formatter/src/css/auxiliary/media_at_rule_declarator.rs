@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssMediaAtRuleDeclarator, CssMediaAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -20,7 +19,7 @@ impl FormatNodeRule<CssMediaAtRuleDeclarator> for FormatCssMediaAtRuleDeclarator
         write!(
             f,
             [
-                format_css_token(&media_token?).lowercase(),
+                media_token.format().with_case(CssCase::Lowercase),
                 space(),
                 // A regular indent here keeps the start of the query on the
                 // same line, even if it ends up breaking over multiple lines

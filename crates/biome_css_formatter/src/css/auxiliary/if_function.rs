@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssIfFunction, CssIfFunctionFields};
 use biome_formatter::{format_args, write};
 
@@ -20,7 +19,7 @@ impl FormatNodeRule<CssIfFunction> for FormatCssIfFunction {
         write!(
             f,
             [
-                format_css_token(&if_token?).lowercase(),
+                if_token.format().with_case(CssCase::Lowercase),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent_with_maybe_space(

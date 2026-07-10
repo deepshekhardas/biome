@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssScopeRangeInterval, CssScopeRangeIntervalFields};
 use biome_formatter::write;
 
@@ -18,7 +17,7 @@ impl FormatNodeRule<CssScopeRangeInterval> for FormatCssScopeRangeInterval {
             [
                 start.format(),
                 space(),
-                format_css_token(&to_token?).lowercase(),
+                to_token.format().with_case(CssCase::Lowercase),
                 space(),
                 end.format()
             ]

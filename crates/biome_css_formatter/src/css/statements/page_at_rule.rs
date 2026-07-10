@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssPageAtRule, CssPageAtRuleFields};
 use biome_formatter::write;
 
@@ -16,7 +15,7 @@ impl FormatNodeRule<CssPageAtRule> for FormatCssPageAtRule {
         write!(
             f,
             [
-                format_css_token(&page_token?).lowercase(),
+                page_token.format().with_case(CssCase::Lowercase),
                 space(),
                 group(&indent(&selectors.format())),
                 space(),

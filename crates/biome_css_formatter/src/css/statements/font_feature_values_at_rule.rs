@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssFontFeatureValuesAtRule, CssFontFeatureValuesAtRuleFields};
 use biome_formatter::write;
 
@@ -21,7 +20,9 @@ impl FormatNodeRule<CssFontFeatureValuesAtRule> for FormatCssFontFeatureValuesAt
         write!(
             f,
             [
-                format_css_token(&font_feature_values_token?).lowercase(),
+                font_feature_values_token?
+                    .format()
+                    .with_case(CssCase::Lowercase),
                 space(),
                 names.format(),
                 space(),

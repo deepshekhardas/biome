@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssForwardAtRule, ScssForwardAtRuleFields};
 use biome_formatter::write;
 
@@ -20,7 +19,7 @@ impl FormatNodeRule<ScssForwardAtRule> for FormatScssForwardAtRule {
         write!(
             f,
             [
-                format_css_token(&forward_token?).lowercase(),
+                forward_token.format().with_case(CssCase::Lowercase),
                 space(),
                 url.format()
             ]

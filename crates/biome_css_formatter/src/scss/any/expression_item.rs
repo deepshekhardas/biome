@@ -2,13 +2,23 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyScssExpressionItem;
+use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyScssExpressionItem;
+pub(crate) struct FormatAnyScssExpressionItem {
+    case: CssCase,
+}
+impl FormatRuleWithOptions<AnyScssExpressionItem> for FormatAnyScssExpressionItem {
+    type Options = CssCase;
+    fn with_options(mut self, options: Self::Options) -> Self {
+        self.case = options;
+        self
+    }
+}
 impl FormatRule<AnyScssExpressionItem> for FormatAnyScssExpressionItem {
     type Context = CssFormatContext;
     fn fmt(&self, node: &AnyScssExpressionItem, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
-            AnyScssExpressionItem::AnyCssValue(node) => node.format().fmt(f),
+            AnyScssExpressionItem::AnyCssValue(node) => node.format().with_case(self.case).fmt(f),
             AnyScssExpressionItem::CssDeclarationImportant(node) => node.format().fmt(f),
             AnyScssExpressionItem::CssGenericDelimiter(node) => node.format().fmt(f),
             AnyScssExpressionItem::ScssArbitraryArgument(node) => node.format().fmt(f),

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssIfTestBooleanOrExpr, CssIfTestBooleanOrExprFields};
 use biome_formatter::write;
 
@@ -19,7 +18,7 @@ impl FormatNodeRule<CssIfTestBooleanOrExpr> for FormatCssIfTestBooleanOrExpr {
             [
                 left.format(),
                 space(),
-                format_css_token(&or_token?).lowercase(),
+                or_token.format().with_case(CssCase::Lowercase),
                 space(),
                 right.format()
             ]

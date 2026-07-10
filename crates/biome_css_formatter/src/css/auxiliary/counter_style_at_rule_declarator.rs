@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{CssCounterStyleAtRuleDeclarator, CssCounterStyleAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -16,14 +15,13 @@ impl FormatNodeRule<CssCounterStyleAtRuleDeclarator> for FormatCssCounterStyleAt
             counter_style_token,
             name,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&counter_style_token?).lowercase(),
+                counter_style_token.format().with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve()
+                name.format()
             ]
         )
     }

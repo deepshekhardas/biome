@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssSupportsNotCondition, CssSupportsNotConditionFields};
 use biome_formatter::write;
 
@@ -12,7 +11,7 @@ impl FormatNodeRule<CssSupportsNotCondition> for FormatCssSupportsNotCondition {
         write!(
             f,
             [
-                format_css_token(&not_token?).preserve(),
+                not_token.format().with_case(CssCase::Preserve),
                 space(),
                 query.format()
             ]

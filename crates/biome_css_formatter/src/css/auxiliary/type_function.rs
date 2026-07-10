@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssTypeFunction, CssTypeFunctionFields};
 use biome_formatter::{format_args, write};
 
@@ -18,7 +17,7 @@ impl FormatNodeRule<CssTypeFunction> for FormatCssTypeFunction {
         write!(
             f,
             [
-                format_css_token(&name_token?).lowercase(),
+                name_token.format().with_case(CssCase::Lowercase),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent(&ty.format()),

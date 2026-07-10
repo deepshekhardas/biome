@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, should_preserve_query_feature_name};
+use crate::utils::case::query_feature_name_case;
 use biome_css_syntax::{CssQueryFeaturePlain, CssQueryFeaturePlainFields};
 use biome_formatter::write;
 
@@ -13,12 +13,7 @@ impl FormatNodeRule<CssQueryFeaturePlain> for FormatCssQueryFeaturePlain {
             value,
         } = node.as_fields();
         let name = name?;
-        let value = value?;
-        let formatted_name = if should_preserve_query_feature_name(&name) {
-            format_css_identifier(&name).preserve()
-        } else {
-            format_css_identifier(&name).lowercase()
-        };
+        let formatted_name = name.format().with_case(query_feature_name_case(&name));
 
         write!(
             f,
@@ -26,7 +21,7 @@ impl FormatNodeRule<CssQueryFeaturePlain> for FormatCssQueryFeaturePlain {
                 formatted_name,
                 colon_token.format(),
                 space(),
-                format_css_identifier(&value).preserve()
+                value.format().with_case(CssCase::Preserve)
             ]
         )
     }

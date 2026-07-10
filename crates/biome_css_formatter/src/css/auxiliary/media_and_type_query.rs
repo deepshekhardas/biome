@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use crate::utils::media_query_comments::{fmt_media_query_leading, fmt_media_query_node};
 use biome_css_syntax::{CssMediaAndTypeQuery, CssMediaAndTypeQueryFields};
 use biome_formatter::write;
@@ -23,7 +22,7 @@ impl FormatNodeRule<CssMediaAndTypeQuery> for FormatCssMediaAndTypeQuery {
             [
                 left.format(),
                 space(),
-                format_css_token(&and_token?).preserve(),
+                and_token.format().with_case(CssCase::Preserve),
                 space(),
                 right.format()
             ]

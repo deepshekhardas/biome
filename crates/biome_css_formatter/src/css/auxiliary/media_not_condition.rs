@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssMediaNotCondition, CssMediaNotConditionFields};
 use biome_formatter::write;
 
@@ -15,7 +14,7 @@ impl FormatNodeRule<CssMediaNotCondition> for FormatCssMediaNotCondition {
         write!(
             f,
             [
-                format_css_token(&not_token?).preserve(),
+                not_token.format().with_case(CssCase::Preserve),
                 space(),
                 condition.format()
             ]

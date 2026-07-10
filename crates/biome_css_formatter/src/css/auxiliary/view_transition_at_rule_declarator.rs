@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{
     CssViewTransitionAtRuleDeclarator, CssViewTransitionAtRuleDeclaratorFields,
 };
@@ -18,6 +17,11 @@ impl FormatNodeRule<CssViewTransitionAtRuleDeclarator> for FormatCssViewTransiti
             view_transition_token,
         } = node.as_fields();
 
-        write!(f, [format_css_token(&view_transition_token?).lowercase()])
+        write!(
+            f,
+            [view_transition_token?
+                .format()
+                .with_case(CssCase::Lowercase)]
+        )
     }
 }

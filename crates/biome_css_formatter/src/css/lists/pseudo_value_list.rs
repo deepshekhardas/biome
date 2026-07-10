@@ -1,4 +1,3 @@
-use crate::utils::case::format_css_identifier;
 use crate::{FormatCssSyntaxToken, prelude::*};
 use biome_css_syntax::{AnyCssPseudoValue, CssLanguage, CssPseudoValueList};
 use biome_formatter::{trivia::FormatToken, write};
@@ -35,11 +34,7 @@ impl Format<CssFormatContext> for FormatPseudoValueItem {
         let separator = self.element.trailing_separator()?;
         let node = self.element.node()?;
 
-        if let Some(identifier) = node.as_css_identifier() {
-            format_css_identifier(identifier).preserve().fmt(f)?;
-        } else {
-            node.format().fmt(f)?;
-        }
+        node.format().with_case(CssCase::Preserve).fmt(f)?;
 
         if let Some(token) = separator {
             if self.last {

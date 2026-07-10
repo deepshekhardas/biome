@@ -2,16 +2,18 @@ use std::borrow::Cow;
 
 use crate::context::CssFormatOptions;
 use crate::prelude::*;
-use biome_css_syntax::CssLanguage;
 use biome_css_syntax::CssSyntaxKind::{CSS_STRING_LITERAL, CSS_URL_VALUE_RAW_LITERAL, IDENT};
 use biome_css_syntax::CssSyntaxToken;
+use biome_css_syntax::{
+    CssGenericProperty, CssLanguage, CssSyntaxNode, ScssInterpolatedIdentifier,
+};
 use biome_formatter::QuoteStyle;
 use biome_formatter::token::string::normalize_string;
 use biome_formatter::{
     Format, FormatResult,
     prelude::{text, write},
 };
-use biome_rowan::SyntaxToken;
+use biome_rowan::{AstNode, SyntaxToken};
 use biome_string_case::StrLikeExtension;
 
 use crate::{AsFormat, CssFormatter, prelude::CssFormatContext};
@@ -285,30 +287,39 @@ impl<'token> LiteralStringNormaliser<'token> {
 
 pub(crate) struct FormatDimensionUnit {
     token: SyntaxToken<CssLanguage>,
-    preserve_source_case: bool,
+    case: DimensionUnitCase,
+}
+
+/// Case policy for CSS dimension units.
+#[derive(Debug, Clone, Copy, Default)]
+pub(crate) enum DimensionUnitCase {
+    /// Uses Prettier-compatible casing such as `Hz`, `kHz`, and `Q`.
+    #[default]
+    Canonical,
+    /// Preserves source casing in author-owned SCSS interpolation.
+    Preserve,
 }
 
 impl From<SyntaxToken<CssLanguage>> for FormatDimensionUnit {
     fn from(value: SyntaxToken<CssLanguage>) -> Self {
         Self {
             token: value,
-            preserve_source_case: false,
+            case: DimensionUnitCase::Canonical,
         }
     }
 }
 
 impl FormatDimensionUnit {
-    pub(crate) fn preserve_source_case(value: SyntaxToken<CssLanguage>) -> Self {
-        Self {
-            token: value,
-            preserve_source_case: true,
-        }
+    /// Sets the unit casing policy.
+    pub(crate) fn with_case(mut self, case: DimensionUnitCase) -> Self {
+        self.case = case;
+        self
     }
 }
 
 impl Format<CssFormatContext> for FormatDimensionUnit {
     fn fmt(&self, f: &mut CssFormatter) -> FormatResult<()> {
-        if self.preserve_source_case {
+        if matches!(self.case, DimensionUnitCase::Preserve) {
             return write!(f, [self.token.format()]);
         }
 
@@ -342,6 +353,27 @@ impl Format<CssFormatContext> for FormatDimensionUnit {
                 )
             }
         }
+    }
+}
+
+/// Returns the unit policy for dimensions in interpolated property names.
+pub(crate) fn dimension_unit_case(node: &CssSyntaxNode) -> DimensionUnitCase {
+    let Some(identifier) = node
+        .ancestors()
+        .skip(1)
+        .find_map(ScssInterpolatedIdentifier::cast)
+    else {
+        return DimensionUnitCase::Canonical;
+    };
+
+    if identifier
+        .syntax()
+        .parent()
+        .is_some_and(|parent| CssGenericProperty::can_cast(parent.kind()))
+    {
+        DimensionUnitCase::Preserve
+    } else {
+        DimensionUnitCase::Canonical
     }
 }
 

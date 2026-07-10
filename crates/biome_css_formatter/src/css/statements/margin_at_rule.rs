@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssMarginAtRule, CssMarginAtRuleFields};
 use biome_formatter::write;
 
@@ -17,7 +16,7 @@ impl FormatNodeRule<CssMarginAtRule> for FormatCssMarginAtRule {
             f,
             [
                 at_token.format(),
-                format_css_token(&name?).lowercase(),
+                name.format().with_case(CssCase::Lowercase),
                 space(),
                 block.format()
             ]

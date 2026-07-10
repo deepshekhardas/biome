@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use crate::utils::scss_statement_at_rule::format_scss_statement_at_rule_semicolon;
 use biome_css_syntax::{ScssWarnAtRule, ScssWarnAtRuleFields};
 use biome_formatter::write;
@@ -18,7 +17,7 @@ impl FormatNodeRule<ScssWarnAtRule> for FormatScssWarnAtRule {
         write!(
             f,
             [
-                format_css_token(&warn_token?).lowercase(),
+                warn_token.format().with_case(CssCase::Lowercase),
                 space(),
                 value.format(),
                 format_scss_statement_at_rule_semicolon(semicolon_token)

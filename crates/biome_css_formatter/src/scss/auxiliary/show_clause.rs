@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssShowClause, ScssShowClauseFields};
 use biome_formatter::{format_args, write};
 
@@ -16,7 +15,7 @@ impl FormatNodeRule<ScssShowClause> for FormatScssShowClause {
         write!(
             f,
             [group(&format_args![
-                format_css_token(&show_token?).preserve(),
+                show_token.format().with_case(CssCase::Preserve),
                 space(),
                 members.format()
             ])]

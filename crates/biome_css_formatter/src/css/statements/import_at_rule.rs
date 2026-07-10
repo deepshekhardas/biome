@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use crate::utils::import::FormatImportClause;
 use biome_css_syntax::{CssImportAtRule, CssImportAtRuleFields};
 use biome_formatter::write;
@@ -17,7 +16,10 @@ impl FormatNodeRule<CssImportAtRule> for FormatCssImportAtRule {
             semicolon_token,
         } = node.as_fields();
 
-        write!(f, [format_css_token(&import_token?).lowercase(), space()])?;
+        write!(
+            f,
+            [import_token.format().with_case(CssCase::Lowercase), space()]
+        )?;
         let import_clause = FormatImportClause::new(url, layer, supports, media);
         write!(f, [group(&indent(&import_clause))])?;
 

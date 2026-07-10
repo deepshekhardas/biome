@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssIfMediaTest, CssIfMediaTestFields};
 use biome_formatter::{format_args, write};
 
@@ -20,7 +19,7 @@ impl FormatNodeRule<CssIfMediaTest> for FormatCssIfMediaTest {
         write!(
             f,
             [
-                format_css_token(&media_token?).lowercase(),
+                media_token.format().with_case(CssCase::Lowercase),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent_with_maybe_space(&test.format(), should_insert_space),

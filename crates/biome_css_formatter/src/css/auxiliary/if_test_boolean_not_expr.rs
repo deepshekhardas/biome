@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssIfTestBooleanNotExpr, CssIfTestBooleanNotExprFields};
 use biome_formatter::write;
 
@@ -16,7 +15,7 @@ impl FormatNodeRule<CssIfTestBooleanNotExpr> for FormatCssIfTestBooleanNotExpr {
         write!(
             f,
             [
-                format_css_token(&not_token?).lowercase(),
+                not_token.format().with_case(CssCase::Lowercase),
                 space(),
                 expression.format()
             ]

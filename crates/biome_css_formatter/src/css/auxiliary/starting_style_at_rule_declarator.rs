@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssStartingStyleAtRuleDeclarator, CssStartingStyleAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -16,6 +15,9 @@ impl FormatNodeRule<CssStartingStyleAtRuleDeclarator> for FormatCssStartingStyle
             starting_style_token,
         } = node.as_fields();
 
-        write!(f, [format_css_token(&starting_style_token?).lowercase()])
+        write!(
+            f,
+            [starting_style_token.format().with_case(CssCase::Lowercase)]
+        )
     }
 }

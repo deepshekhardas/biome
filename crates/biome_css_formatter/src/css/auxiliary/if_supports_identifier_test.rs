@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{CssIfSupportsIdentifierTest, CssIfSupportsIdentifierTestFields};
 use biome_formatter::write;
 
@@ -21,7 +20,7 @@ impl FormatNodeRule<CssIfSupportsIdentifierTest> for FormatCssIfSupportsIdentifi
         write!(
             f,
             [
-                format_css_identifier(&ident?).preserve(),
+                ident.format().with_case(CssCase::Preserve),
                 colon_token.format(),
                 value.format()
             ]

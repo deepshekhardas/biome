@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssPseudoClassOfNthSelector, CssPseudoClassOfNthSelectorFields};
 use biome_formatter::write;
 
@@ -19,7 +18,7 @@ impl FormatNodeRule<CssPseudoClassOfNthSelector> for FormatCssPseudoClassOfNthSe
         write!(
             f,
             [
-                format_css_token(&of_token?).preserve(),
+                of_token.format().with_case(CssCase::Preserve),
                 space(),
                 selectors.format()
             ]

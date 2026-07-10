@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{ScssIncludeAtRule, ScssIncludeAtRuleFields};
 use biome_formatter::write;
 
@@ -16,14 +15,13 @@ impl FormatNodeRule<ScssIncludeAtRule> for FormatScssIncludeAtRule {
             block,
             semicolon_token,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&include_token?).lowercase(),
+                include_token.format().with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve(),
+                name.format().with_case(CssCase::Preserve),
                 arguments.format()
             ]
         )?;

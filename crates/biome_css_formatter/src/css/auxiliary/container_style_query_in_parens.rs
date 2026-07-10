@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssContainerStyleQueryInParens, CssContainerStyleQueryInParensFields};
 use biome_formatter::{format_args, write};
 
@@ -23,7 +22,7 @@ impl FormatNodeRule<CssContainerStyleQueryInParens> for FormatCssContainerStyleQ
         write!(
             f,
             [
-                format_css_token(&style_token?).lowercase(),
+                style_token.format().with_case(CssCase::Lowercase),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent_with_maybe_space(&query.format(), should_insert_space),

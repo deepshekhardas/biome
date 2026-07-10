@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{TwSlotAtRule, TwSlotAtRuleFields};
 use biome_formatter::write;
 
@@ -15,7 +14,7 @@ impl FormatNodeRule<TwSlotAtRule> for FormatTwSlotAtRule {
         write!(
             f,
             [
-                format_css_token(&slot_token?).lowercase(),
+                slot_token.format().with_case(CssCase::Lowercase),
                 semicolon_token.format()
             ]
         )

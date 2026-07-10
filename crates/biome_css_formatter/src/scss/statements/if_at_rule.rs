@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use crate::utils::scss_control_condition::ScssControlConditionLayout;
 use biome_css_syntax::{
     AnyScssExpression, AnyScssExpressionItem, ScssBinaryExpression, ScssElseClause, ScssExpression,
@@ -35,7 +34,7 @@ impl FormatNodeRule<ScssIfAtRule> for FormatScssIfAtRule {
             }
         });
 
-        write!(f, [format_css_token(&if_token?).lowercase()])?;
+        write!(f, [if_token.format().with_case(CssCase::Lowercase)])?;
 
         if !should_split_after_if {
             write!(f, [space()])?;

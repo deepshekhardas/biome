@@ -1,7 +1,8 @@
 use crate::CssFormatter;
+use crate::FormatCssCaseExt;
 use crate::comments::CssComments;
 use crate::prelude::*;
-use crate::utils::case::format_css_wide_keyword_value;
+use crate::utils::case::css_wide_keyword_case;
 use biome_css_syntax::{
     CssFunction, CssGenericDelimiter, CssGenericProperty, CssIdentifier, CssLanguage,
     CssSyntaxKind, ScssExpression, ScssIncludeArgumentList, css_grid_template_property,
@@ -62,7 +63,8 @@ fn try_write_fill_comma_groups<N, I>(
 ) -> Option<FormatResult<()>>
 where
     N: AstNodeList<Language = CssLanguage, Node = I> + AstNode<Language = CssLanguage>,
-    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I::Format: FormatCssCaseExt,
 {
     if !matches!(layout, ValueListLayout::Fill) {
         return None;
@@ -96,7 +98,8 @@ fn write_fill_comma_groups<N, I>(
 ) -> FormatResult<()>
 where
     N: AstNodeList<Language = CssLanguage, Node = I> + AstNode<Language = CssLanguage>,
-    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I::Format: FormatCssCaseExt,
 {
     let mut groups: Vec<Vec<I>> = Vec::new();
     let mut current_group: Vec<I> = Vec::new();
@@ -152,7 +155,8 @@ where
 pub(crate) fn write_component_value_list<N, I>(node: &N, f: &mut CssFormatter) -> FormatResult<()>
 where
     N: AstNodeList<Language = CssLanguage, Node = I> + AstNode<Language = CssLanguage>,
-    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I::Format: FormatCssCaseExt,
 {
     let layout = get_value_list_layout(node, f.context().comments(), f);
 
@@ -301,18 +305,17 @@ where
     }
 }
 
-/// Formats value-list identifiers such as `color: INITIAL` through keyword casing.
-fn format_component_value_element<I>(element: I) -> impl Format<CssFormatContext>
+/// Applies CSS-wide keyword casing to a component value.
+fn format_component_value_element<I>(element: I) -> I::Format
 where
-    I: AstNode<Language = CssLanguage> + Clone + IntoFormat<CssFormatContext>,
+    I: AstNode<Language = CssLanguage> + IntoFormat<CssFormatContext>,
+    I::Format: FormatCssCaseExt,
 {
-    format_with(move |f| {
-        if let Some(identifier) = CssIdentifier::cast_ref(element.syntax()) {
-            return format_css_wide_keyword_value(&identifier).fmt(f);
-        }
+    let case = CssIdentifier::cast_ref(element.syntax()).map_or(CssCase::Preserve, |identifier| {
+        css_wide_keyword_case(&identifier)
+    });
 
-        element.clone().into_format().fmt(f)
-    })
+    element.into_format().with_case(case)
 }
 
 #[derive(Copy, Clone, Debug)]

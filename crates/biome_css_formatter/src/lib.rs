@@ -132,20 +132,22 @@ where
     }
 }
 
-/// Case policy for source tokens formatted through [`FormatCssSyntaxToken`].
+/// Case policy for CSS syntax owned by a formatter callsite.
 ///
 /// Choose a policy by asking who owns the token text. CSS-owned syntax should
-/// generally use [`CssTokenCase::Lowercase`]. Document, author, Sass,
+/// generally use [`CssCase::Lowercase`]. Document, author, Sass,
 /// framework, and unknown future syntax should generally use
-/// [`CssTokenCase::Preserve`]. The same ownership rule applies to
-/// `format_css_identifier`.
+/// [`CssCase::Preserve`]. The same ownership rule applies to
+/// identifiers.
 ///
-/// Raw `token.format()` defaults to [`CssTokenCase::Auto`]: release builds
-/// preserve source text, while debug builds report contextual keyword tokens as
-/// unclassified at formatter completion. Non-contextual tokens are not audited
-/// because punctuation and literals have no casing policy.
+/// Raw `token.format()` and `identifier.format()` default to
+/// [`CssCase::Auto`]: release builds preserve source text, while debug formatter
+/// tests report unclassified identifiers and contextual keyword tokens.
+/// Non-contextual tokens are not audited because punctuation and literals have
+/// no casing policy. Generated transparent unions forward an explicit policy to
+/// their `CssIdentifier` branch.
 #[derive(Debug, Default, Clone, Copy, Eq, PartialEq)]
-pub(crate) enum CssTokenCase {
+pub(crate) enum CssCase {
     /// No callsite policy was chosen.
     ///
     /// Runtime preserves the source text, while debug builds record formatter
@@ -165,7 +167,7 @@ pub(crate) enum CssTokenCase {
     /// and author-provided framework names.
     ///
     /// ```rust,ignore
-    /// format_css_token(&scope?).preserve()
+    /// scope.format().with_case(CssCase::Preserve)
     /// ```
     Preserve,
     /// Format CSS-owned token text as lowercase.
@@ -176,7 +178,7 @@ pub(crate) enum CssTokenCase {
     /// selector names (https://drafts.csswg.org/selectors-4/#pseudo-classes).
     ///
     /// ```rust,ignore
-    /// format_css_token(&import_token?).lowercase()
+    /// import_token.format().with_case(CssCase::Lowercase)
     /// ```
     Lowercase,
     /// Explicitly skip casing policy after auditing the callsite.
@@ -186,26 +188,51 @@ pub(crate) enum CssTokenCase {
     /// token text.
     ///
     /// ```rust,ignore
-    /// format_css_token(token).ignore()
+    /// token.format().with_case(CssCase::Ignore)
     /// ```
+    #[expect(dead_code)]
     Ignore,
 }
 
-/// Convenience methods for CSS syntax token formatting.
-pub(crate) trait FormatCssSyntaxTokenExt {
-    /// Formats this token as lowercase.
-    fn with_lowercase(self) -> Self;
+/// Adds an explicit case policy to a CSS formatting rule.
+pub(crate) trait FormatCssCaseExt {
+    /// Replaces the formatter rule's default [`CssCase::Auto`] policy.
+    fn with_case(self, case: CssCase) -> Self;
 }
 
-impl FormatCssSyntaxTokenExt for FormatRefWithRule<'_, CssSyntaxToken, FormatCssSyntaxToken> {
-    fn with_lowercase(self) -> Self {
-        self.with_options(CssTokenCase::Lowercase)
+impl<T, R> FormatCssCaseExt for FormatRefWithRule<'_, T, R>
+where
+    R: FormatRuleWithOptions<T, Options = CssCase>,
+{
+    fn with_case(self, case: CssCase) -> Self {
+        self.with_options(case)
     }
 }
 
-impl FormatCssSyntaxTokenExt for FormatOwnedWithRule<CssSyntaxToken, FormatCssSyntaxToken> {
-    fn with_lowercase(self) -> Self {
-        self.with_options(CssTokenCase::Lowercase)
+impl<T, R> FormatCssCaseExt for FormatOwnedWithRule<T, R>
+where
+    R: FormatRuleWithOptions<T, Options = CssCase>,
+{
+    fn with_case(self, case: CssCase) -> Self {
+        self.with_options(case)
+    }
+}
+
+impl<T> FormatCssCaseExt for biome_rowan::SyntaxResult<T>
+where
+    T: FormatCssCaseExt,
+{
+    fn with_case(self, case: CssCase) -> Self {
+        self.map(|formatted| formatted.with_case(case))
+    }
+}
+
+impl<T> FormatCssCaseExt for Option<T>
+where
+    T: FormatCssCaseExt,
+{
+    fn with_case(self, case: CssCase) -> Self {
+        self.map(|formatted| formatted.with_case(case))
     }
 }
 
@@ -393,11 +420,11 @@ impl FormatLanguage for CssFormatLanguage {
 /// This re-implementation of FormatToken owns token trivia and casing policy.
 #[derive(Default, Debug, Clone, Copy)]
 pub(crate) struct FormatCssSyntaxToken {
-    case: CssTokenCase,
+    case: CssCase,
 }
 
 impl FormatRuleWithOptions<CssSyntaxToken> for FormatCssSyntaxToken {
-    type Options = CssTokenCase;
+    type Options = CssCase;
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.case = options;
@@ -414,11 +441,11 @@ impl FormatRule<CssSyntaxToken> for FormatCssSyntaxToken {
         self.format_skipped_token_trivia(token, f)?;
 
         #[cfg(debug_assertions)]
-        if self.case == CssTokenCase::Auto {
+        if self.case == CssCase::Auto {
             crate::utils::case::record_auto_contextual_token(token, f);
         }
 
-        if self.resolve_case() == CssTokenCase::Lowercase {
+        if self.case == CssCase::Lowercase {
             let original = token.text_trimmed();
             match original.to_ascii_lowercase_cow() {
                 Cow::Borrowed(_) => self.format_trimmed_token_trivia(token, f),
@@ -431,17 +458,6 @@ impl FormatRule<CssSyntaxToken> for FormatCssSyntaxToken {
             }
         } else {
             self.format_trimmed_token_trivia(token, f)
-        }
-    }
-}
-
-impl FormatCssSyntaxToken {
-    fn resolve_case(self) -> CssTokenCase {
-        match self.case {
-            CssTokenCase::Lowercase => CssTokenCase::Lowercase,
-            CssTokenCase::Auto | CssTokenCase::Preserve | CssTokenCase::Ignore => {
-                CssTokenCase::Preserve
-            }
         }
     }
 }
@@ -531,7 +547,7 @@ mod tests {
     use crate::context::CssFormatOptions;
     use crate::format_node;
     use crate::{
-        AsFormat, CssFormatContext, CssFormatLanguage, CssFormatter, FormatCssSyntaxTokenExt,
+        AsFormat, CssCase, CssFormatContext, CssFormatLanguage, CssFormatter, FormatCssCaseExt,
         FormatNodeRule,
     };
     use biome_css_parser::{CssParserOptions, parse_css};
@@ -570,14 +586,59 @@ mod tests {
         let comments = Comments::from_node(&syntax, &CssCommentStyle, None);
         let context = CssFormatContext::new(CssFormatOptions::default(), comments);
 
-        let lowercase =
-            biome_formatter::format!(context, [import_token.format().with_lowercase()]).unwrap();
+        let lowercase = biome_formatter::format!(
+            context,
+            [import_token.format().with_case(CssCase::Lowercase)]
+        )
+        .unwrap();
         assert_eq!(lowercase.print().unwrap().as_code(), "import");
 
         let comments = Comments::from_node(&syntax, &CssCommentStyle, None);
         let context = CssFormatContext::new(CssFormatOptions::default(), comments);
         let preserved = biome_formatter::format!(context, [import_token.format()]).unwrap();
         assert_eq!(preserved.print().unwrap().as_code(), "IMPORT");
+    }
+
+    #[test]
+    fn css_case_formats_syntax_result_without_unwrapping() {
+        let parse = parse_css(
+            "@IMPORT \"Keep\";",
+            CssFileSource::css(),
+            CssParserOptions::default(),
+        );
+        let syntax = parse.syntax();
+        let import_token = syntax
+            .descendants_tokens(Direction::Next)
+            .find(|token| token.kind() == CssSyntaxKind::IMPORT_KW)
+            .unwrap();
+        let result: biome_rowan::SyntaxResult<_> = Ok(import_token);
+        let comments = Comments::from_node(&syntax, &CssCommentStyle, None);
+        let context = CssFormatContext::new(CssFormatOptions::default(), comments);
+
+        let formatted =
+            biome_formatter::format!(context, [result.format().with_case(CssCase::Lowercase)])
+                .unwrap();
+
+        assert_eq!(formatted.print().unwrap().as_code(), "import");
+    }
+
+    #[test]
+    fn css_case_formats_option_without_mapping() {
+        let parse = parse_css(
+            "COLOR: red;",
+            CssFileSource::css(),
+            CssParserOptions::default(),
+        );
+        let syntax = parse.syntax();
+        let identifier = syntax.descendants().find_map(CssIdentifier::cast);
+        let comments = Comments::from_node(&syntax, &CssCommentStyle, None);
+        let context = CssFormatContext::new(CssFormatOptions::default(), comments);
+
+        let formatted =
+            biome_formatter::format!(context, [identifier.format().with_case(CssCase::Preserve)])
+                .unwrap();
+
+        assert_eq!(formatted.print().unwrap().as_code(), "COLOR");
     }
 
     #[cfg(debug_assertions)]
@@ -629,10 +690,38 @@ mod tests {
         state.assert_no_audit_events();
     }
 
+    #[cfg(debug_assertions)]
     #[test]
-    fn css_syntax_node_generic_component_identifier_preserves_case() {
+    #[should_panic(expected = "CSS formatter used an unclassified case policy")]
+    fn default_css_syntax_node_identifier_records_formatter_audit_event() {
         let parse = parse_css(
-            ".a { unknown: KeepOne; }",
+            "COLOR: red;",
+            CssFileSource::css(),
+            CssParserOptions::default(),
+        );
+        let syntax = parse.syntax();
+        let identifier = syntax
+            .descendants()
+            .filter_map(CssIdentifier::cast)
+            .find(|identifier| identifier.syntax().text_trimmed() == "COLOR")
+            .unwrap();
+
+        let comments = Comments::from_node(&syntax, &CssCommentStyle, None);
+        let context = CssFormatContext::new(CssFormatOptions::default(), comments);
+        let mut state = FormatState::new(context);
+
+        {
+            let mut buffer = VecBuffer::new(&mut state);
+            write!(buffer, [identifier.syntax().format()]).unwrap();
+        }
+
+        state.assert_no_audit_events();
+    }
+
+    #[test]
+    fn css_syntax_node_component_value_uses_css_wide_keyword_case() {
+        let parse = parse_css(
+            ".a { unknown: INITIAL; }",
             CssFileSource::css(),
             CssParserOptions::default(),
         );
@@ -641,7 +730,7 @@ mod tests {
             .descendants()
             .filter_map(CssIdentifier::cast)
             .find(|identifier| {
-                identifier.syntax().text_trimmed() == "KeepOne"
+                identifier.syntax().text_trimmed() == "INITIAL"
                     && identifier
                         .parent::<CssGenericComponentValueList>()
                         .is_some()
@@ -650,7 +739,7 @@ mod tests {
 
         let formatted = format_node(CssFormatOptions::default(), identifier.syntax()).unwrap();
 
-        assert_eq!(formatted.print().unwrap().as_code(), "KeepOne");
+        assert_eq!(formatted.print().unwrap().as_code(), "initial");
     }
 
     #[test]

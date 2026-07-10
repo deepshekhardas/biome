@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{ScssFunctionAtRule, ScssFunctionAtRuleFields};
 use biome_formatter::write;
 
@@ -14,14 +13,13 @@ impl FormatNodeRule<ScssFunctionAtRule> for FormatScssFunctionAtRule {
             parameters,
             block,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&function_token?).lowercase(),
+                function_token.format().with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve(),
+                name.format().with_case(CssCase::Preserve),
                 parameters.format(),
                 space(),
                 block.format()

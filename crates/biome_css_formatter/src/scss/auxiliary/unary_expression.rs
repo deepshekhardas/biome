@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{
     AnyCssFunction, ScssParenthesizedExpression, ScssUnaryExpression, ScssUnaryExpressionFields, T,
     is_in_scss_control_condition_sequence,
@@ -35,7 +34,7 @@ impl FormatNodeRule<ScssUnaryExpression> for FormatScssUnaryExpression {
             write!(
                 f,
                 [
-                    format_css_token(&operator).preserve(),
+                    operator.format().with_case(CssCase::Preserve),
                     separator,
                     expression.format()
                 ]
@@ -45,7 +44,7 @@ impl FormatNodeRule<ScssUnaryExpression> for FormatScssUnaryExpression {
             write!(
                 f,
                 [
-                    format_css_token(&operator).preserve(),
+                    operator.format().with_case(CssCase::Preserve),
                     space(),
                     expression.format()
                 ]
@@ -53,7 +52,10 @@ impl FormatNodeRule<ScssUnaryExpression> for FormatScssUnaryExpression {
         } else {
             write!(
                 f,
-                [format_css_token(&operator).preserve(), expression.format()]
+                [
+                    operator.format().with_case(CssCase::Preserve),
+                    expression.format()
+                ]
             )
         }
     }

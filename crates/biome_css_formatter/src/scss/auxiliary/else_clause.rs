@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssElseClause, ScssElseClauseFields};
 use biome_formatter::write;
 
@@ -18,7 +17,7 @@ impl FormatNodeRule<ScssElseClause> for FormatScssElseClause {
             f,
             [
                 at_token.format(),
-                format_css_token(&else_token?).lowercase(),
+                else_token.format().with_case(CssCase::Lowercase),
                 space(),
                 body.format()
             ]

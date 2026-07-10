@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{CssUnknownValueAtRule, CssUnknownValueAtRuleFields};
 use biome_formatter::write;
 
@@ -13,7 +12,7 @@ impl FormatNodeRule<CssUnknownValueAtRule> for FormatCssUnknownValueAtRule {
             semicolon_token,
         } = node.as_fields();
 
-        write!(f, [format_css_identifier(&name?).lowercase()])?;
+        write!(f, [name.format().with_case(CssCase::Lowercase)])?;
 
         if let Ok(components) = components {
             if components.items().next().is_some() {

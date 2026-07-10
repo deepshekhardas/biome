@@ -1,6 +1,5 @@
 use std::fmt::Debug;
 
-use crate::utils::case::format_css_identifier;
 use crate::{FormatCssSyntaxToken, prelude::*};
 use biome_css_syntax::{AnyCssAttrName, CssAttrNameList, CssLanguage};
 use biome_formatter::{trivia::FormatToken, write};
@@ -37,7 +36,7 @@ impl Format<CssFormatContext> for FormatAttrNameItem {
         let separator = self.element.trailing_separator()?;
         let node = self.element.node()?;
 
-        write!(f, [format_css_identifier(node).preserve()])?;
+        write!(f, [node.format().with_case(CssCase::Preserve)])?;
 
         if let Some(token) = separator {
             if self.last {

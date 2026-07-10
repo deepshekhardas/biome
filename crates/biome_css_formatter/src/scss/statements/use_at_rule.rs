@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssUseAtRule, ScssUseAtRuleFields};
 use biome_formatter::write;
 
@@ -19,7 +18,7 @@ impl FormatNodeRule<ScssUseAtRule> for FormatScssUseAtRule {
         write!(
             f,
             [
-                format_css_token(&use_token?).lowercase(),
+                use_token.format().with_case(CssCase::Lowercase),
                 space(),
                 url.format()
             ]

@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{CssPropertyAtRuleDeclarator, CssPropertyAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -16,14 +15,13 @@ impl FormatNodeRule<CssPropertyAtRuleDeclarator> for FormatCssPropertyAtRuleDecl
             property_token,
             name,
         } = node.as_fields();
-        let name = name?;
 
         write!(
             f,
             [
-                format_css_token(&property_token?).lowercase(),
+                property_token.format().with_case(CssCase::Lowercase),
                 space(),
-                format_css_identifier(&name).preserve()
+                name.format()
             ]
         )
     }

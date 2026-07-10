@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssCharsetAtRule, CssCharsetAtRuleFields};
 use biome_formatter::write;
 
@@ -16,7 +15,7 @@ impl FormatNodeRule<CssCharsetAtRule> for FormatCssCharsetAtRule {
         write!(
             f,
             [
-                format_css_token(&charset_token?).lowercase(),
+                charset_token.format().with_case(CssCase::Lowercase),
                 space(),
                 encoding.format(),
                 semicolon_token.format()

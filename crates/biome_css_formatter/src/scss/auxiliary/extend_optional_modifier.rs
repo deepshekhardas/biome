@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssExtendOptionalModifier, ScssExtendOptionalModifierFields};
 use biome_formatter::write;
 
@@ -20,7 +19,7 @@ impl FormatNodeRule<ScssExtendOptionalModifier> for FormatScssExtendOptionalModi
             f,
             [
                 excl_token.format(),
-                format_css_token(&optional_token?).preserve()
+                optional_token.format().with_case(CssCase::Preserve)
             ]
         )
     }

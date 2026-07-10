@@ -1,5 +1,4 @@
 use crate::prelude::*;
-use crate::utils::case::format_css_identifier;
 use biome_css_syntax::CssPseudoElementFunctionParameterList;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssPseudoElementFunctionParameterList;
@@ -16,7 +15,7 @@ impl FormatRule<CssPseudoElementFunctionParameterList>
         let mut joiner = f.join_with(&separator);
 
         for parameter in node.iter() {
-            joiner.entry(&format_css_identifier(&parameter).preserve());
+            joiner.entry(&parameter.format().with_case(CssCase::Preserve));
         }
 
         joiner.finish()
