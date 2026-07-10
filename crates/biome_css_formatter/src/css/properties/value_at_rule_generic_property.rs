@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{CssValueAtRuleGenericProperty, CssValueAtRuleGenericPropertyFields};
 use biome_formatter::write;
 #[derive(Debug, Clone, Default)]
@@ -18,7 +19,7 @@ impl FormatNodeRule<CssValueAtRuleGenericProperty> for FormatCssValueAtRuleGener
         write!(
             f,
             [
-                name.format().with_case(CssCase::Preserve),
+                format_css_identifier(&name?).preserve(),
                 colon_token.format(),
                 space(),
                 value.format()

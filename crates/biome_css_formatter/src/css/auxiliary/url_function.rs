@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssUrlFunction, CssUrlFunctionFields};
 use biome_formatter::write;
 
@@ -24,7 +25,7 @@ impl FormatNodeRule<CssUrlFunction> for FormatCssUrlFunction {
         write!(
             f,
             [
-                name.format().with_case(CssCase::Preserve),
+                format_css_token(&name?).preserve(),
                 l_paren_token.format(),
                 maybe_space,
                 value.format()

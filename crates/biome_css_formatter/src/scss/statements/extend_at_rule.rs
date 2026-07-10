@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{ScssExtendAtRule, ScssExtendAtRuleFields};
 use biome_formatter::write;
 
@@ -26,7 +27,7 @@ impl FormatNodeRule<ScssExtendAtRule> for FormatScssExtendAtRule {
         write!(
             f,
             [
-                extend_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&extend_token?).lowercase(),
                 space(),
                 group(&target),
                 semicolon_token.format()

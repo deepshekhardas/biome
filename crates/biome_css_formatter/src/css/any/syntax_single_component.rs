@@ -2,18 +2,8 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyCssSyntaxSingleComponent;
-use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyCssSyntaxSingleComponent {
-    case: CssCase,
-}
-impl FormatRuleWithOptions<AnyCssSyntaxSingleComponent> for FormatAnyCssSyntaxSingleComponent {
-    type Options = CssCase;
-    fn with_options(mut self, options: Self::Options) -> Self {
-        self.case = options;
-        self
-    }
-}
+pub(crate) struct FormatAnyCssSyntaxSingleComponent;
 impl FormatRule<AnyCssSyntaxSingleComponent> for FormatAnyCssSyntaxSingleComponent {
     type Context = CssFormatContext;
     fn fmt(&self, node: &AnyCssSyntaxSingleComponent, f: &mut CssFormatter) -> FormatResult<()> {
@@ -21,9 +11,7 @@ impl FormatRule<AnyCssSyntaxSingleComponent> for FormatAnyCssSyntaxSingleCompone
             AnyCssSyntaxSingleComponent::CssBogusSyntaxSingleComponent(node) => {
                 node.format().fmt(f)
             }
-            AnyCssSyntaxSingleComponent::CssIdentifier(node) => {
-                node.format().with_case(self.case).fmt(f)
-            }
+            AnyCssSyntaxSingleComponent::CssIdentifier(node) => node.format().fmt(f),
             AnyCssSyntaxSingleComponent::CssSyntaxType(node) => node.format().fmt(f),
         }
     }

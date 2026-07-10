@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssScopeRangeEnd, CssScopeRangeEndFields};
 use biome_formatter::write;
 
@@ -11,7 +12,7 @@ impl FormatNodeRule<CssScopeRangeEnd> for FormatCssScopeRangeEnd {
         write!(
             f,
             [
-                to_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&to_token?).lowercase(),
                 space(),
                 end.format()
             ]

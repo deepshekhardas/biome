@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{
     CssValueAtRuleNamedImportSpecifier, CssValueAtRuleNamedImportSpecifierFields,
 };
@@ -23,11 +24,11 @@ impl FormatNodeRule<CssValueAtRuleNamedImportSpecifier>
         write!(
             f,
             [
-                name.format().with_case(CssCase::Preserve),
+                format_css_identifier(&name?).preserve(),
                 space(),
-                as_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&as_token?).lowercase(),
                 space(),
-                local_name.format().with_case(CssCase::Preserve)
+                format_css_identifier(&local_name?).preserve()
             ]
         )
     }

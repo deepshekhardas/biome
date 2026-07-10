@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{TwFunctionalUtilityName, TwFunctionalUtilityNameFields};
 use biome_formatter::write;
 
@@ -15,7 +16,7 @@ impl FormatNodeRule<TwFunctionalUtilityName> for FormatTwFunctionalUtilityName {
         write!(
             f,
             [
-                identifier.format().with_case(CssCase::Preserve),
+                format_css_identifier(&identifier?).preserve(),
                 minus_token.format(),
                 star_token.format()
             ]

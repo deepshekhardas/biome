@@ -13,10 +13,7 @@ impl FormatNodeRule<CssColor> for FormatCssColor {
 
         write!(
             f,
-            [
-                hash_token.format(),
-                value_token.format().with_case(CssCase::Lowercase)
-            ]
+            [hash_token.format(), value_token.format()?.with_lowercase()]
         )
     }
 }

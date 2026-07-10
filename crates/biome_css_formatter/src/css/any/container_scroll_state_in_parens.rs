@@ -2,20 +2,8 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyCssContainerScrollStateInParens;
-use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyCssContainerScrollStateInParens {
-    case: CssCase,
-}
-impl FormatRuleWithOptions<AnyCssContainerScrollStateInParens>
-    for FormatAnyCssContainerScrollStateInParens
-{
-    type Options = CssCase;
-    fn with_options(mut self, options: Self::Options) -> Self {
-        self.case = options;
-        self
-    }
-}
+pub(crate) struct FormatAnyCssContainerScrollStateInParens;
 impl FormatRule<AnyCssContainerScrollStateInParens> for FormatAnyCssContainerScrollStateInParens {
     type Context = CssFormatContext;
     fn fmt(
@@ -27,9 +15,7 @@ impl FormatRule<AnyCssContainerScrollStateInParens> for FormatAnyCssContainerScr
             AnyCssContainerScrollStateInParens::AnyCssContainerScrollStateQuery(node) => {
                 node.format().fmt(f)
             }
-            AnyCssContainerScrollStateInParens::AnyCssValue(node) => {
-                node.format().with_case(self.case).fmt(f)
-            }
+            AnyCssContainerScrollStateInParens::AnyCssValue(node) => node.format().fmt(f),
         }
     }
 }

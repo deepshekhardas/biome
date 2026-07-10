@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::TwApplyClassList;
 use biome_formatter::write;
 #[derive(Debug, Clone, Default)]
@@ -12,10 +13,10 @@ impl FormatRule<TwApplyClassList> for FormatTwApplyClassList {
             return Ok(());
         };
 
-        write!(f, [first.format().with_case(CssCase::Preserve)])?;
+        write!(f, [format_css_identifier(&first).preserve()])?;
 
         for class in classes {
-            write!(f, [space(), class.format().with_case(CssCase::Preserve)])?;
+            write!(f, [space(), format_css_identifier(&class).preserve()])?;
         }
 
         Ok(())

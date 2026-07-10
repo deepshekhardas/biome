@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssContainerStyleAndQuery, CssContainerStyleAndQueryFields};
 use biome_formatter::write;
 
@@ -21,7 +22,7 @@ impl FormatNodeRule<CssContainerStyleAndQuery> for FormatCssContainerStyleAndQue
             [
                 left.format(),
                 space(),
-                and_token.format().with_case(CssCase::Preserve),
+                format_css_token(&and_token?).preserve(),
                 space(),
                 right.format()
             ]

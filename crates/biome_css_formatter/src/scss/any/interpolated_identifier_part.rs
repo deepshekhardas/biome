@@ -2,20 +2,8 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyScssInterpolatedIdentifierPart;
-use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyScssInterpolatedIdentifierPart {
-    case: CssCase,
-}
-impl FormatRuleWithOptions<AnyScssInterpolatedIdentifierPart>
-    for FormatAnyScssInterpolatedIdentifierPart
-{
-    type Options = CssCase;
-    fn with_options(mut self, options: Self::Options) -> Self {
-        self.case = options;
-        self
-    }
-}
+pub(crate) struct FormatAnyScssInterpolatedIdentifierPart;
 impl FormatRule<AnyScssInterpolatedIdentifierPart> for FormatAnyScssInterpolatedIdentifierPart {
     type Context = CssFormatContext;
     fn fmt(
@@ -25,9 +13,7 @@ impl FormatRule<AnyScssInterpolatedIdentifierPart> for FormatAnyScssInterpolated
     ) -> FormatResult<()> {
         match node {
             AnyScssInterpolatedIdentifierPart::CssCustomIdentifier(node) => node.format().fmt(f),
-            AnyScssInterpolatedIdentifierPart::CssIdentifier(node) => {
-                node.format().with_case(self.case).fmt(f)
-            }
+            AnyScssInterpolatedIdentifierPart::CssIdentifier(node) => node.format().fmt(f),
             AnyScssInterpolatedIdentifierPart::ScssInterpolatedIdentifierHyphen(node) => {
                 node.format().fmt(f)
             }

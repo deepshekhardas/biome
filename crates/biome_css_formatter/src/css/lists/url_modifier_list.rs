@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::CssUrlModifierList;
 use biome_formatter::write;
 
@@ -13,19 +14,20 @@ impl FormatRule<CssUrlModifierList> for FormatCssUrlModifierList {
             return Ok(());
         };
 
-        write!(f, [first.format().with_case(CssCase::Preserve)])?;
+        write!(f, [format_css_identifier(&first).preserve()])?;
 
         let mut previous = first;
         for modifier in modifiers {
             let has_source_gap = previous.syntax().text_trimmed_range().end()
                 < modifier.syntax().text_trimmed_range().start();
-            write!(
-                f,
-                [
-                    maybe_space(has_source_gap),
-                    modifier.format().with_case(CssCase::Preserve)
-                ]
-            )?;
+            let separator = format_once(move |f| {
+                if has_source_gap {
+                    space().fmt(f)?;
+                }
+                Ok(())
+            });
+
+            write!(f, [separator, format_css_identifier(&modifier).preserve()])?;
             previous = modifier;
         }
 

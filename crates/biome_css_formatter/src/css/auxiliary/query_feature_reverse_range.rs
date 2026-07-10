@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::utils::case::query_feature_name_case;
+use crate::utils::case::{format_css_identifier, should_preserve_query_feature_name};
 use biome_css_syntax::{CssQueryFeatureReverseRange, CssQueryFeatureReverseRangeFields};
 use biome_formatter::write;
 
@@ -17,7 +17,11 @@ impl FormatNodeRule<CssQueryFeatureReverseRange> for FormatCssQueryFeatureRevers
             right,
         } = node.as_fields();
         let right = right?;
-        let formatted_right = right.format().with_case(query_feature_name_case(&right));
+        let formatted_right = if should_preserve_query_feature_name(&right) {
+            format_css_identifier(&right).preserve()
+        } else {
+            format_css_identifier(&right).lowercase()
+        };
 
         write!(
             f,

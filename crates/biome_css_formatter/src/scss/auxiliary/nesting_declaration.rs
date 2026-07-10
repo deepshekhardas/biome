@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{ScssNestingDeclaration, ScssNestingDeclarationFields};
 use biome_formatter::write;
 
@@ -16,7 +17,7 @@ impl FormatNodeRule<ScssNestingDeclaration> for FormatScssNestingDeclaration {
         write!(
             f,
             [
-                name.format().with_case(CssCase::Lowercase),
+                format_css_identifier(&name?).lowercase(),
                 colon_token.format()
             ]
         )?;

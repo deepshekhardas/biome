@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use crate::utils::scss_statement_at_rule::format_scss_statement_at_rule_semicolon;
 use biome_css_syntax::{ScssDebugAtRule, ScssDebugAtRuleFields};
 use biome_formatter::write;
@@ -17,7 +18,7 @@ impl FormatNodeRule<ScssDebugAtRule> for FormatScssDebugAtRule {
         write!(
             f,
             [
-                debug_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&debug_token?).lowercase(),
                 space(),
                 value.format(),
                 format_scss_statement_at_rule_semicolon(semicolon_token)

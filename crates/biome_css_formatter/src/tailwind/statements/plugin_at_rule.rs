@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{TwPluginAtRule, TwPluginAtRuleFields};
 use biome_formatter::write;
 
@@ -16,7 +17,7 @@ impl FormatNodeRule<TwPluginAtRule> for FormatTwPluginAtRule {
         write!(
             f,
             [
-                plugin_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&plugin_token?).lowercase(),
                 space(),
                 name.format()
             ]

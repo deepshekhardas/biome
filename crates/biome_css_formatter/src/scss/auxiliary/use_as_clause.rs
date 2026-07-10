@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{ScssUseAsClause, ScssUseAsClauseFields};
 use biome_formatter::write;
 
@@ -11,13 +12,14 @@ impl FormatNodeRule<ScssUseAsClause> for FormatScssUseAsClause {
             as_token,
             namespace,
         } = node.as_fields();
+        let namespace = namespace?;
 
         write!(
             f,
             [
-                as_token.format().with_case(CssCase::Preserve),
+                format_css_token(&as_token?).preserve(),
                 space(),
-                namespace.format().with_case(CssCase::Preserve)
+                format_css_identifier(&namespace).preserve()
             ]
         )
     }

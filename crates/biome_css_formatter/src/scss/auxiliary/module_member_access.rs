@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{ScssModuleMemberAccess, ScssModuleMemberAccessFields};
 use biome_formatter::write;
 
@@ -11,13 +12,14 @@ impl FormatNodeRule<ScssModuleMemberAccess> for FormatScssModuleMemberAccess {
             dot_token,
             member,
         } = node.as_fields();
+        let member = member?;
 
         write!(
             f,
             [
-                module.format().with_case(CssCase::Preserve),
+                format_css_identifier(&module?).preserve(),
                 dot_token.format(),
-                member.format().with_case(CssCase::Preserve)
+                format_css_identifier(&member).preserve()
             ]
         )
     }

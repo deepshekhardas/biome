@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssKeyframesScopePrefix, CssKeyframesScopePrefixFields};
 use biome_formatter::write;
 
@@ -10,11 +11,7 @@ impl FormatNodeRule<CssKeyframesScopePrefix> for FormatCssKeyframesScopePrefix {
 
         write!(
             f,
-            [
-                scope.format().with_case(CssCase::Preserve),
-                space(),
-                name.format(),
-            ]
+            [format_css_token(&scope?).preserve(), space(), name.format(),]
         )
     }
 }

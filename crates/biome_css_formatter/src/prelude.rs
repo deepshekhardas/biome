@@ -4,7 +4,7 @@
 
 pub(crate) use crate::separated::FormatAstSeparatedListExtension;
 pub(crate) use crate::{
-    AsFormat, CssCase, CssFormatContext, CssFormatter, FormatCssCaseExt as _, FormatNodeRule,
+    AsFormat, CssFormatContext, CssFormatter, FormatCssSyntaxTokenExt as _, FormatNodeRule,
     FormattedIterExt as _, IntoFormat, format_number_token, format_removed, format_replaced,
     on_removed, on_skipped, verbatim::*,
 };

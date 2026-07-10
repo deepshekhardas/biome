@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::ScssParentSelectorSuffixPartList;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatScssParentSelectorSuffixPartList;
@@ -10,7 +11,7 @@ impl FormatRule<ScssParentSelectorSuffixPartList> for FormatScssParentSelectorSu
         f: &mut CssFormatter,
     ) -> FormatResult<()> {
         for item in node {
-            item.format().with_case(CssCase::Preserve).fmt(f)?;
+            format_css_identifier(&item).preserve().fmt(f)?;
         }
 
         Ok(())

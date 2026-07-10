@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssFontFaceAtRuleDeclarator, CssFontFaceAtRuleDeclaratorFields};
 use biome_formatter::write;
 
@@ -13,6 +14,6 @@ impl FormatNodeRule<CssFontFaceAtRuleDeclarator> for FormatCssFontFaceAtRuleDecl
     ) -> FormatResult<()> {
         let CssFontFaceAtRuleDeclaratorFields { font_face_token } = node.as_fields();
 
-        write!(f, [font_face_token.format().with_case(CssCase::Lowercase)])
+        write!(f, [format_css_token(&font_face_token?).lowercase()])
     }
 }

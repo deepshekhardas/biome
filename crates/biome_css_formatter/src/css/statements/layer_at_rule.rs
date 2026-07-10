@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssLayerAtRule, CssLayerAtRuleFields};
 use biome_formatter::write;
 
@@ -11,7 +12,7 @@ impl FormatNodeRule<CssLayerAtRule> for FormatCssLayerAtRule {
         write!(
             f,
             [
-                layer_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&layer_token?).lowercase(),
                 space(),
                 layer.format()
             ]

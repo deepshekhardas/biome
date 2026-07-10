@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{CssPageSelectorPseudo, CssPageSelectorPseudoFields};
 use biome_formatter::write;
 
@@ -10,12 +11,13 @@ impl FormatNodeRule<CssPageSelectorPseudo> for FormatCssPageSelectorPseudo {
             colon_token,
             selector,
         } = node.as_fields();
+        let selector = selector?;
 
         write!(
             f,
             [
                 colon_token.format(),
-                selector.format().with_case(CssCase::Preserve)
+                format_css_identifier(&selector).preserve()
             ]
         )
     }

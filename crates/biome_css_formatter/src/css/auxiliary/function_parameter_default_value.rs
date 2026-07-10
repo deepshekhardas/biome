@@ -1,6 +1,7 @@
 use biome_css_syntax::{CssFunctionParameterDefaultValue, CssFunctionParameterDefaultValueFields};
 
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_formatter::write;
 
 #[derive(Debug, Clone, Default)]
@@ -19,7 +20,7 @@ impl FormatNodeRule<CssFunctionParameterDefaultValue> for FormatCssFunctionParam
             [
                 colon_token.format(),
                 space(),
-                value.format().with_case(CssCase::Preserve)
+                format_css_identifier(&value?).preserve()
             ]
         )
     }

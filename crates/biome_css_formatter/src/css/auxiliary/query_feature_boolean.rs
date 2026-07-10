@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use crate::utils::case::query_feature_name_case;
+use crate::utils::case::{format_css_identifier, should_preserve_query_feature_name};
 use biome_css_syntax::{CssQueryFeatureBoolean, CssQueryFeatureBooleanFields};
 use biome_formatter::write;
 
@@ -10,6 +10,10 @@ impl FormatNodeRule<CssQueryFeatureBoolean> for FormatCssQueryFeatureBoolean {
         let CssQueryFeatureBooleanFields { name } = node.as_fields();
         let name = name?;
 
-        write!(f, [name.format().with_case(query_feature_name_case(&name))])
+        if should_preserve_query_feature_name(&name) {
+            write!(f, [format_css_identifier(&name).preserve()])
+        } else {
+            write!(f, [format_css_identifier(&name).lowercase()])
+        }
     }
 }

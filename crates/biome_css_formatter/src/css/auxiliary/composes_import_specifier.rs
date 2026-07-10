@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{CssComposesImportSpecifier, CssComposesImportSpecifierFields};
 use biome_formatter::write;
 
@@ -11,13 +12,15 @@ impl FormatNodeRule<CssComposesImportSpecifier> for FormatCssComposesImportSpeci
         f: &mut CssFormatter,
     ) -> FormatResult<()> {
         let CssComposesImportSpecifierFields { from_token, source } = node.as_fields();
+
+        let source = source?;
         write![
             f,
             [
                 space(),
-                from_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&from_token?).lowercase(),
                 space(),
-                source.format().with_case(CssCase::Preserve)
+                format_css_identifier(&source).preserve()
             ]
         ]
     }

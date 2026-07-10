@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssKeyframesScopeFunction, CssKeyframesScopeFunctionFields};
 use biome_formatter::write;
 
@@ -27,7 +28,7 @@ impl FormatNodeRule<CssKeyframesScopeFunction> for FormatCssKeyframesScopeFuncti
         write!(
             f,
             [
-                scope.format().with_case(CssCase::Preserve),
+                format_css_token(&scope?).preserve(),
                 l_paren_token.format(),
                 maybe_space,
                 name.format(),

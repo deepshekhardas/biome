@@ -2,20 +2,8 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyCssContainerOrCombinableQuery;
-use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyCssContainerOrCombinableQuery {
-    case: CssCase,
-}
-impl FormatRuleWithOptions<AnyCssContainerOrCombinableQuery>
-    for FormatAnyCssContainerOrCombinableQuery
-{
-    type Options = CssCase;
-    fn with_options(mut self, options: Self::Options) -> Self {
-        self.case = options;
-        self
-    }
-}
+pub(crate) struct FormatAnyCssContainerOrCombinableQuery;
 impl FormatRule<AnyCssContainerOrCombinableQuery> for FormatAnyCssContainerOrCombinableQuery {
     type Context = CssFormatContext;
     fn fmt(
@@ -25,7 +13,7 @@ impl FormatRule<AnyCssContainerOrCombinableQuery> for FormatAnyCssContainerOrCom
     ) -> FormatResult<()> {
         match node {
             AnyCssContainerOrCombinableQuery::AnyCssContainerQueryInParens(node) => {
-                node.format().with_case(self.case).fmt(f)
+                node.format().fmt(f)
             }
             AnyCssContainerOrCombinableQuery::CssContainerOrQuery(node) => node.format().fmt(f),
         }

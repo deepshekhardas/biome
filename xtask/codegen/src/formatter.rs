@@ -236,36 +236,9 @@ impl ModuleIndex {
 
 enum NodeKind {
     Node,
-    List {
-        separated: bool,
-    },
+    List { separated: bool },
     Bogus,
-    Union {
-        variants: Vec<String>,
-        css_case_variants: BTreeSet<String>,
-    },
-}
-
-/// Returns unions that directly or transitively contain `CssIdentifier`.
-fn css_identifier_unions(unions: &BTreeMap<String, Vec<String>>) -> BTreeSet<String> {
-    let mut result = BTreeSet::new();
-
-    loop {
-        let previous_len = result.len();
-
-        for (name, variants) in unions {
-            if variants
-                .iter()
-                .any(|variant| variant == "CssIdentifier" || result.contains(variant))
-            {
-                result.insert(name.clone());
-            }
-        }
-
-        if result.len() == previous_len {
-            return result;
-        }
-    }
+    Union { variants: Vec<String> },
 }
 
 pub fn generate_formatters(allow_dirty: bool, allow_staged: bool) {
@@ -278,16 +251,6 @@ pub fn generate_formatters(allow_dirty: bool, allow_staged: bool) {
 
 fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
     let ast = load_ast(language_kind);
-    let identifier_unions = if language_kind == LanguageKind::Css {
-        css_identifier_unions(
-            &ast.unions
-                .iter()
-                .map(|union| (union.name.clone(), union.variants.clone()))
-                .collect(),
-        )
-    } else {
-        BTreeSet::new()
-    };
 
     // Store references to all the files created by the codegen
     // script to build the module import files
@@ -318,20 +281,9 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
         }))
         .chain(ast.bogus.into_iter().map(|name| (NodeKind::Bogus, name)))
         .chain(ast.unions.into_iter().map(|node| {
-            let css_case_variants = node
-                .variants
-                .iter()
-                .filter(|variant| {
-                    variant.as_str() == "CssIdentifier"
-                        || identifier_unions.contains(variant.as_str())
-                })
-                .cloned()
-                .collect();
-
             (
                 NodeKind::Union {
                     variants: node.variants,
-                    css_case_variants,
                 },
                 node.name,
             )
@@ -470,55 +422,22 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
                     }
                 }
             }
-            NodeKind::Union {
-                variants,
-                css_case_variants,
-            } => {
+            NodeKind::Union { variants } => {
                 // For each variant of the union call to_format_element on the wrapped node
                 let match_arms: Vec<_> = variants
                     .into_iter()
                     .map(|variant| {
-                        let supports_css_case = css_case_variants.contains(&variant);
                         let variant = Ident::new(&variant, Span::call_site());
-
-                        if supports_css_case {
-                            quote! { #node_id::#variant(node) => node.format().with_case(self.case).fmt(f), }
-                        } else {
-                            quote! { #node_id::#variant(node) => node.format().fmt(f), }
-                        }
+                        quote! { #node_id::#variant(node) => node.format().fmt(f), }
                     })
                     .collect();
-
-                let case_support = if css_case_variants.is_empty() {
-                    quote! {
-                        #[derive(Debug, Clone, Default)]
-                        pub(crate) struct #format_id;
-                    }
-                } else {
-                    quote! {
-                        use biome_formatter::FormatRuleWithOptions;
-
-                        #[derive(Debug, Clone, Default)]
-                        pub(crate) struct #format_id {
-                            case: CssCase,
-                        }
-
-                        impl FormatRuleWithOptions<#node_id> for #format_id {
-                            type Options = CssCase;
-
-                            fn with_options(mut self, options: Self::Options) -> Self {
-                                self.case = options;
-                                self
-                            }
-                        }
-                    }
-                };
 
                 quote! {
                     use crate::prelude::*;
                     use #syntax_crate_ident::#node_id;
 
-                    #case_support
+                    #[derive(Debug, Clone, Default)]
+                    pub(crate) struct #format_id;
 
                     impl FormatRule<#node_id> for #format_id {
                         type Context = #formatter_context_ident;
@@ -1029,44 +948,5 @@ impl LanguageKind {
         };
 
         Ident::new(name, Span::call_site())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn finds_unions_that_transitively_contain_css_identifier() {
-        let unions = BTreeMap::from([
-            (
-                "AnyCssValue".to_string(),
-                vec!["CssIdentifier".to_string(), "CssString".to_string()],
-            ),
-            (
-                "AnyCssSupportsInParens".to_string(),
-                vec!["AnyCssValue".to_string(), "CssFunction".to_string()],
-            ),
-            (
-                "AnyCssSupportsCondition".to_string(),
-                vec!["AnyCssSupportsInParens".to_string()],
-            ),
-            (
-                "AnyCssSelectorCustomIdentifier".to_string(),
-                vec![
-                    "CssCustomIdentifier".to_string(),
-                    "ScssInterpolatedIdentifier".to_string(),
-                ],
-            ),
-        ]);
-
-        assert_eq!(
-            css_identifier_unions(&unions),
-            BTreeSet::from([
-                "AnyCssSupportsCondition".to_string(),
-                "AnyCssSupportsInParens".to_string(),
-                "AnyCssValue".to_string(),
-            ])
-        );
     }
 }

@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::{format_css_identifier, format_css_token};
 use biome_css_syntax::{
     ScssBinaryExpression, ScssBinaryExpressionFields, is_in_scss_control_condition_sequence,
     is_in_scss_parenthesized_expression, is_scss_parenthesized_expression,
@@ -16,13 +17,13 @@ impl FormatNodeRule<ScssBinaryExpression> for FormatScssBinaryExpression {
         if is_in_scss_control_condition_sequence(node) {
             write!(
                 f,
-                [left.format().with_case(CssCase::Preserve), formatted_right]
+                [format_css_identifier(&left).preserve(), formatted_right]
             )
         } else {
             write!(
                 f,
                 [group(&format_args![
-                    left.format().with_case(CssCase::Preserve),
+                    format_css_identifier(&left).preserve(),
                     formatted_right
                 ])]
             )
@@ -63,22 +64,24 @@ impl Format<CssFormatContext> for FormatScssBinaryRightSide<'_> {
             operator, right, ..
         } = self.node.as_fields();
 
-        write!(f, [space(), operator.format().with_case(CssCase::Preserve)])?;
+        write!(f, [space(), format_css_token(&operator?).preserve()])?;
 
         if self.should_indent() {
+            let right = right?;
             write!(
                 f,
                 [indent(&format_args![
                     soft_line_break_or_space(),
-                    right.format().with_case(CssCase::Preserve)
+                    format_css_identifier(&right).preserve()
                 ])]
             )
         } else {
+            let right = right?;
             write!(
                 f,
                 [
                     soft_line_break_or_space(),
-                    right.format().with_case(CssCase::Preserve)
+                    format_css_identifier(&right).preserve()
                 ]
             )
         }

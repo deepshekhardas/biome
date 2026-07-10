@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{
     CssPseudoClassFunctionRelativeSelectorList, CssPseudoClassFunctionRelativeSelectorListFields,
 };
@@ -22,11 +23,12 @@ impl FormatNodeRule<CssPseudoClassFunctionRelativeSelectorList>
         } = node.as_fields();
 
         let should_insert_space = f.options().delimiter_spacing().value();
+        let name = name?;
 
         write!(
             f,
             [
-                name.format().with_case(CssCase::Lowercase),
+                format_css_identifier(&name).lowercase(),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent_with_maybe_space(

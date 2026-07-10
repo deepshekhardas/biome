@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{CssDeclarationImportant, CssDeclarationImportantFields};
 use biome_formatter::write;
 
@@ -15,7 +16,7 @@ impl FormatNodeRule<CssDeclarationImportant> for FormatCssDeclarationImportant {
             f,
             [
                 excl_token.format(),
-                important_token.format().with_case(CssCase::Lowercase)
+                format_css_token(&important_token?).lowercase()
             ]
         )
     }

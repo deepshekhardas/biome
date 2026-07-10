@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_token;
 use biome_css_syntax::{TwReferenceAtRule, TwReferenceAtRuleFields};
 use biome_formatter::write;
 
@@ -15,7 +16,7 @@ impl FormatNodeRule<TwReferenceAtRule> for FormatTwReferenceAtRule {
         write!(
             f,
             [
-                reference_token.format().with_case(CssCase::Lowercase),
+                format_css_token(&reference_token?).lowercase(),
                 space(),
                 path.format(),
                 semicolon_token.format()

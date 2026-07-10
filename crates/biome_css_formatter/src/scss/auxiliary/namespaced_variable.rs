@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{ScssNamespacedVariable, ScssNamespacedVariableFields};
 use biome_formatter::write;
 
@@ -16,7 +17,7 @@ impl FormatNodeRule<ScssNamespacedVariable> for FormatScssNamespacedVariable {
         write!(
             f,
             [
-                namespace.format().with_case(CssCase::Preserve),
+                format_css_identifier(&namespace?).preserve(),
                 dot_token.format(),
                 name.format()
             ]

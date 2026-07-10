@@ -2,26 +2,14 @@
 
 use crate::prelude::*;
 use biome_css_syntax::AnyCssBracketedValueItem;
-use biome_formatter::FormatRuleWithOptions;
 #[derive(Debug, Clone, Default)]
-pub(crate) struct FormatAnyCssBracketedValueItem {
-    case: CssCase,
-}
-impl FormatRuleWithOptions<AnyCssBracketedValueItem> for FormatAnyCssBracketedValueItem {
-    type Options = CssCase;
-    fn with_options(mut self, options: Self::Options) -> Self {
-        self.case = options;
-        self
-    }
-}
+pub(crate) struct FormatAnyCssBracketedValueItem;
 impl FormatRule<AnyCssBracketedValueItem> for FormatAnyCssBracketedValueItem {
     type Context = CssFormatContext;
     fn fmt(&self, node: &AnyCssBracketedValueItem, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssBracketedValueItem::AnyCssCustomIdentifier(node) => node.format().fmt(f),
-            AnyCssBracketedValueItem::AnyScssExpression(node) => {
-                node.format().with_case(self.case).fmt(f)
-            }
+            AnyCssBracketedValueItem::AnyScssExpression(node) => node.format().fmt(f),
             AnyCssBracketedValueItem::CssGenericDelimiter(node) => node.format().fmt(f),
         }
     }

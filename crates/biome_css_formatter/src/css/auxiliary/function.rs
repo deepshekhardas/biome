@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::case::format_css_identifier;
 use biome_css_syntax::{CssFunction, CssFunctionFields};
 use biome_formatter::{format_args, write};
 #[derive(Debug, Clone, Default)]
@@ -13,11 +14,12 @@ impl FormatNodeRule<CssFunction> for FormatCssFunction {
         } = node.as_fields();
 
         let should_insert_space = f.options().delimiter_spacing().value();
+        let name = name?;
 
         write!(
             f,
             [
-                name.format().with_case(CssCase::Preserve),
+                format_css_identifier(&name).preserve(),
                 group(&format_args![
                     l_paren_token.format(),
                     soft_block_indent_with_maybe_space(&items.format(), should_insert_space),
