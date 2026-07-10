@@ -583,6 +583,32 @@ mod tests {
     #[cfg(debug_assertions)]
     #[test]
     #[should_panic(expected = "CSS formatter used an unclassified case policy")]
+    fn default_css_token_case_records_formatter_audit_event() {
+        let parse = parse_css(
+            "@IMPORT \"Keep\";",
+            CssFileSource::css(),
+            CssParserOptions::default(),
+        );
+        let syntax = parse.syntax();
+        let import_token = syntax
+            .descendants_tokens(Direction::Next)
+            .find(|token| token.kind() == CssSyntaxKind::IMPORT_KW)
+            .unwrap();
+        let comments = Comments::from_node(&syntax, &CssCommentStyle, None);
+        let context = CssFormatContext::new(CssFormatOptions::default(), comments);
+        let mut state = FormatState::new(context);
+
+        {
+            let mut buffer = VecBuffer::new(&mut state);
+            write!(buffer, [import_token.format()]).unwrap();
+        }
+
+        state.assert_no_audit_events();
+    }
+
+    #[cfg(debug_assertions)]
+    #[test]
+    #[should_panic(expected = "CSS formatter used an unclassified case policy")]
     fn default_css_identifier_case_records_formatter_audit_event() {
         let parse = parse_css(
             "COLOR: red;",

@@ -1,9 +1,9 @@
 use crate::prelude::*;
 use crate::{CssTokenCase, FormatCssSyntaxToken};
 use biome_css_syntax::{
-    AnyCssQueryFeatureName, CssContainerScrollStateQueryInParens, CssGenericProperty,
-    CssIdentifier, CssIfMediaTest, CssLanguage, CssSyntaxNode, CssSyntaxToken,
-    ScssInterpolatedIdentifier,
+    AnyCssQueryFeatureName, AnyCssSelectorIdentifier, CssContainerScrollStateQueryInParens,
+    CssGenericProperty, CssIdentifier, CssIfMediaTest, CssLanguage, CssQualifiedRule,
+    CssSyntaxNode, CssSyntaxToken, ScssInterpolatedIdentifier,
 };
 use biome_formatter::{Format, FormatRefWithRule};
 
@@ -192,6 +192,21 @@ fn is_dashed_identifier(identifier: &CssIdentifier) -> bool {
     identifier
         .value_token()
         .is_ok_and(|token| token.token_text_trimmed().starts_with("--"))
+}
+
+/// Preserves custom pseudo names such as `:--STATE`.
+pub(crate) fn should_preserve_pseudo_name(name: &AnyCssSelectorIdentifier) -> bool {
+    let Some(name) = name.as_css_identifier() else {
+        return true;
+    };
+
+    name.value_token()
+        .is_ok_and(|token| token.token_text_trimmed().starts_with("--"))
+        || name
+            .syntax()
+            .ancestors()
+            .find_map(CssQualifiedRule::cast)
+            .is_some_and(|rule| rule.prelude().syntax().text_trimmed().starts_with("---"))
 }
 
 /// Preserves units in interpolated declaration names such as:

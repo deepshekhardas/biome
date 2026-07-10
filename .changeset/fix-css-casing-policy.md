@@ -10,5 +10,5 @@ Fixed CSS formatter casing for syntax-owned names while preserving author-define
 - @KEYFRAMES :GLOBAL KeepFrames { FROM { COLOR: RED; } }
 + @keyframes :GLOBAL KeepFrames { from { color: RED; } }
 - @CONTAINER scroll-state((SCROLLED: TOP) AND (STUCK)) { A:HOVER { COLOR: RED; } }
-+ @container scroll-state((scrolled: top) and (stuck)) { A:hover { color: RED; } }
++ @container scroll-state((SCROLLED: TOP) AND (STUCK)) { A:hover { color: RED; } }
 ```
