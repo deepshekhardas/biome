@@ -1,5 +1,31 @@
 # @biomejs/biome
 
+## 2.5.4
+
+### Patch Changes
+
+- [#10842](https://github.com/biomejs/biome/pull/10842) [`5e1abfe`](https://github.com/biomejs/biome/commit/5e1abfee59155b5fdca8813314371ed54c06acfb) Thanks [@JamBalaya56562](https://github.com/JamBalaya56562)! - Fixed [#9196](https://github.com/biomejs/biome/issues/9196): `biome check --write --unsafe` no longer hangs forever when applying the [`noCommentText`](https://biomejs.dev/linter/rules/no-comment-text/) code fix.
+
+  The rule's fix now wraps the comment in a real JSX expression container (`{/* comment */}`) instead of re-inserting the braces as plain JSX text, so the fixed code is no longer reported again by the same rule.
+
+- [#10891](https://github.com/biomejs/biome/pull/10891) [`ecca79e`](https://github.com/biomejs/biome/commit/ecca79e8ff10f40aa676212c0db0a970c6091615) Thanks [@ematipico](https://github.com/ematipico)! - Fixed [`#10885`](https://github.com/biomejs/biome/issues/10885): prevented a module-inference regression introduced by a housekeeping change.
+
+- [#10886](https://github.com/biomejs/biome/pull/10886) [`60c8043`](https://github.com/biomejs/biome/commit/60c8043527f7ccc7b505471e1042f2a4324e4d31) Thanks [@dyc3](https://github.com/dyc3)! - Fixed [#10727](https://github.com/biomejs/biome/issues/10727): Biome now breaks the arguments of curried `test.each`, `it.each`, `describe.each`, and `test.for` calls when they exceed the configured line width.
+
+  ```diff
+  - test.each([[1, 2]])("a description that is long enough to push the hugged opening line beyond the print width", (a, b) => {
+  -   expect(a).toBe(b);
+  - });
+  + test.each([[1, 2]])(
+  +   "a description that is long enough to push the hugged opening line beyond the print width",
+  +   (a, b) => {
+  +     expect(a).toBe(b);
+  +   },
+  + );
+  ```
+
+- [#10895](https://github.com/biomejs/biome/pull/10895) [`01a85f0`](https://github.com/biomejs/biome/commit/01a85f04b09f0af05b16a15c137421e312ceada5) Thanks [@ematipico](https://github.com/ematipico)! - Biome will now remove stale Unix daemon sockets from older Biome versions when starting a newer daemon.
+
 ## 2.5.3
 
 ### Patch Changes
