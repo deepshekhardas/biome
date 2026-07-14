@@ -136,18 +136,18 @@ impl Rule for UseSortedAttributes {
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let attrs = ctx.query();
 
-        if attrs
+        // Skip processing instructions (like <?xml ...?>) as their pseudo-attributes
+        // have a fixed order mandated by the XML specification
+        let is_processing_instruction = attrs
             .syntax()
             .ancestors()
-            .skip(1)
-            .find_map(HtmlProcessingInstruction::cast)
-            .is_some()
-        {
-            return vec![].into_boxed_slice();
+            .any(|node| HtmlProcessingInstruction::can_cast(node.kind()));
+
+        if is_processing_instruction {
+            return [][..].into();
         }
 
         let options = ctx.options();
-
         let mut current_attr_group = AttributeGroup::default();
         let mut attr_groups = Vec::new();
         let sort_by = options.sort_order.unwrap_or_default();
@@ -375,31 +375,30 @@ impl SortableHtmlAttribute {
                 }
             }
             AnyHtmlAttribute::AnyVueDirective(AnyVueDirective::VueVBindShorthandDirective(dir)) => {
-                let Ok(directive_arg) = dir.arg() else {
-                    return SortCategory::VueCustomDirective;
-                };
-                // Argument-less `:="props"` is equivalent to `v-bind="props"`.
-                let Some(arg) = directive_arg.arg() else {
-                    return SortCategory::VueOtherAttribute;
-                };
-                match arg {
-                    AnyVueDirectiveArgument::VueBogusDirectiveArgument(_) => SortCategory::Unknown,
-                    AnyVueDirectiveArgument::VueDynamicArgument(_) => {
-                        SortCategory::VueOtherAttribute
-                    }
-                    AnyVueDirectiveArgument::VueStaticArgument(arg) => {
-                        if let Ok(arg_name) =
-                            arg.name_token().as_ref().map(|token| token.text_trimmed())
-                        {
-                            match arg_name {
-                                "is" => SortCategory::VueDefinition,
-                                "key" => SortCategory::VueUnique,
-                                _ => SortCategory::VueOtherAttribute,
+                if let Ok(arg) = dir.arg().and_then(|arg| arg.arg()) {
+                    match arg {
+                        AnyVueDirectiveArgument::VueBogusDirectiveArgument(_) => {
+                            SortCategory::Unknown
+                        }
+                        AnyVueDirectiveArgument::VueDynamicArgument(_) => {
+                            SortCategory::VueOtherAttribute
+                        }
+                        AnyVueDirectiveArgument::VueStaticArgument(arg) => {
+                            if let Ok(arg_name) =
+                                arg.name_token().as_ref().map(|token| token.text_trimmed())
+                            {
+                                match arg_name {
+                                    "is" => SortCategory::VueDefinition,
+                                    "key" => SortCategory::VueUnique,
+                                    _ => SortCategory::VueOtherAttribute,
+                                }
+                            } else {
+                                SortCategory::VueCustomDirective
                             }
-                        } else {
-                            SortCategory::VueCustomDirective
                         }
                     }
+                } else {
+                    SortCategory::VueCustomDirective
                 }
             }
             AnyHtmlAttribute::AnyVueDirective(AnyVueDirective::VueVOnShorthandDirective(_)) => {
@@ -497,12 +496,13 @@ impl SortableAttribute for SortableHtmlAttribute {
                     "v-on" | "v-bind" | "v-slot" => dir
                         .arg()?
                         .arg()
+                        .ok()
                         .and_then(|arg| vue_directive_arg_token(&arg)),
                     _ => dir.name_token().ok(),
                 }
             }
             AnyHtmlAttribute::AnyVueDirective(AnyVueDirective::VueVBindShorthandDirective(dir)) => {
-                vue_directive_arg_token(&dir.arg().ok()?.arg()?)
+                vue_directive_arg_token(&dir.arg().ok()?.arg().ok()?)
             }
             AnyHtmlAttribute::AnyVueDirective(AnyVueDirective::VueVSlotShorthandDirective(dir)) => {
                 vue_directive_arg_token(&dir.arg().ok()?)
