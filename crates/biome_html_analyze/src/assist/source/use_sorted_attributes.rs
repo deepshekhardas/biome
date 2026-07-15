@@ -10,7 +10,7 @@ use biome_diagnostics::Applicability;
 use biome_html_syntax::{
     AnyAstroDirective, AnyHtmlAttribute, AnySvelteBindingProperty, AnySvelteDirective,
     AnyVueDirective, AnyVueDirectiveArgument, AstroDirectiveValue, HtmlAttributeList, HtmlLanguage,
-    HtmlOpeningElement, HtmlProcessingInstruction, HtmlSelfClosingElement, SvelteDirectiveValue,
+    HtmlOpeningElement, HtmlSelfClosingElement, SvelteDirectiveValue,
 };
 use biome_rowan::{AstNode, AstNodeExt, BatchMutationExt, SyntaxToken};
 use biome_rule_options::use_sorted_attributes::{SortOrder, UseSortedAttributesOptions};
@@ -135,17 +135,6 @@ impl Rule for UseSortedAttributes {
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let attrs = ctx.query();
-
-        if attrs
-            .syntax()
-            .ancestors()
-            .skip(1)
-            .find_map(HtmlProcessingInstruction::cast)
-            .is_some()
-        {
-            return vec![].into_boxed_slice();
-        }
-
         let options = ctx.options();
 
         let mut current_attr_group = AttributeGroup::default();
@@ -378,7 +367,6 @@ impl SortableHtmlAttribute {
                 let Ok(directive_arg) = dir.arg() else {
                     return SortCategory::VueCustomDirective;
                 };
-                // Argument-less `:="props"` is equivalent to `v-bind="props"`.
                 let Some(arg) = directive_arg.arg() else {
                     return SortCategory::VueOtherAttribute;
                 };
